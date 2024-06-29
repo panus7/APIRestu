@@ -1,0 +1,2409 @@
+﻿using ClassUtility;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.Serialization;
+using System.ServiceModel;
+using System.ServiceModel.Web;
+using System.Text;
+
+namespace DevBizRESTService
+{
+    [DataContract]
+    public class ParamGeneral
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string Value1 { get; set; }        
+    }
+
+    [DataContract]
+    public class ResultData
+    {
+        [DataMember]
+        public string message { get; set; }
+        [DataMember]
+        public bool status { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetDocument
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string PrescriptionNo { get; set; }
+        [DataMember]
+        public string Clinic { get; set; }
+        [DataMember]
+        public string Doctor { get; set; }
+    }
+
+    public class ResultDocuments
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<Document_Item> ListOfDocumentItems { get; set; }
+    }
+
+    public class Document_Item
+    {
+        [DataMember]
+        public string DocumentNo { get; set; }
+        [DataMember]
+        public string DocumentDateTime { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string AN { get; set; }
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public string GeneralFacility { get; set; }
+        [DataMember]
+        public string GeneralRef { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string Clinic { get; set; }
+        [DataMember]
+        public string Doctor { get; set; }
+        [DataMember]
+        public string DocumentFolder1 { get; set; }
+        [DataMember]
+        public string DocumentFolder2 { get; set; }
+        [DataMember]
+        public string DocumentFolder3 { get; set; }
+        [DataMember]
+        public string DocumentData { get; set; }
+        [DataMember]
+        public string DocumentType { get; set; }
+        [DataMember]
+        public string Rate { get; set; }
+        [DataMember]
+        public string Memo { get; set; }
+        [DataMember]
+        public string UpdateByUserCode { get; set; }
+        [DataMember]
+        public string UpdateDateTime { get; set; }
+        [DataMember]
+        public string FileName { get; set; }
+        [DataMember]
+        public string HN_Old { get; set; }
+        [DataMember]
+        public string DeleteByUserCode { get; set; }
+        [DataMember]
+        public string DeleteDateTime { get; set; }
+        [DataMember]
+        public string ImportDocumentType { get; set; }
+        [DataMember]
+        public string JobStatusType { get; set; }
+        [DataMember]
+        public string DocumentInfoType { get; set; }  //Compress = 1 , PDF = 2 Enum.General.DocumentInfoType.PDF
+        [DataMember]
+        public string DocumentThumbnail { get; set; }
+        [DataMember]
+        public string ContentMemo { get; set; }
+    }
+
+    [DataContract]
+    public class RequestData
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string user { get; set; }
+        [DataMember]
+        public string hn { get; set; }
+        [DataMember]
+        public string vn { get; set; }
+        [DataMember]
+        public string visitdate { get; set; }
+        [DataMember]
+        public string prescriptionno { get; set; }
+        [DataMember]
+        public string clinic { get; set; }
+        [DataMember]
+        public string doctor { get; set; }
+        [DataMember]
+        public string folder1 { get; set; }
+        [DataMember]
+        public string folder2 { get; set; }
+        [DataMember]
+        public string folder3 { get; set; }
+        [DataMember]
+        public string details { get; set; }
+    }
+
+    [DataContract]
+    public class GetIPDData
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string hn { get; set; }
+        [DataMember]
+        public string an { get; set; }
+        [DataMember]
+        public DateTime AdmitDate { get; set; }
+    }
+
+    [DataContract]
+    public class EnquireAdmit
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string doctor { get; set; }
+    }
+
+    //#NewOPD
+    [DataContract]
+    public class ParamGetPatientData
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public DateTime VisitDate { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetOPDData
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        //----------------------------------------
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember] //YYYY-MM-DD
+        public string strVisitDateFrom { get; set; }
+        [DataMember] //YYYY-MM-DD
+        public string strVisitDateTo { get; set; }
+        [DataMember]
+        public List<String> ListOfPrescripClinic { get; set; }
+        [DataMember]
+        public List<String> ListOfPrescripDoctor { get; set; }
+        [DataMember] //YYYY-MM-DD
+        public string strVisitDate { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetFacilityData
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        //----------------------------------------
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string FacilityRms { get; set; }
+        [DataMember]
+        public string RequestNo { get; set; }
+        [DataMember]
+        public string AN { get; set; }
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public string strVisitDate { get; set; }
+        [DataMember]
+        public Byte PrescriptionNo { get; set; }
+    }
+
+
+    [DataContract]
+    public class ValidUserParam
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string user { get; set; }
+        [DataMember]
+        public string password { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+    }
+
+    [DataContract]
+    public class ServiceCallContext
+    {
+        bool boolAuthenUser = false;
+        string strMsgError = string.Empty;
+        string byHISsystem = "32";
+
+        string strUserID = string.Empty;
+        string strUserLoginPassword = string.Empty;
+        string strServerName = string.Empty;
+        string strDBName = string.Empty;
+        string strDBUser = string.Empty;
+        string strDBPassword = string.Empty;
+        string strCustomerSite = string.Empty;
+        string strLicenceKey = string.Empty;
+        string strComputerLocation = string.Empty;
+        List<string> strDoctors = new List<string>(); //AAA,BBB,CCC
+
+        [DataMember]
+        public string bHISsystem { get { return byHISsystem; } set { byHISsystem = value; } }
+        [DataMember]
+        public string UserLoginID { get { return strUserID; } set { strUserID = value; } }
+        [DataMember]
+        public string UserLoginPassword { get { return strUserLoginPassword; } set { strUserLoginPassword = value; } }
+        [DataMember]
+        public string ServerName { get { return strServerName; } set { strServerName = value; } }
+        [DataMember]
+        public string DBName { get { return strDBName; } set { strDBName = value; } }
+        [DataMember]
+        public string DBUser { get { return strDBUser; } set { strDBUser = value; } }
+        [DataMember]
+        public string DBPassword { get { return strDBPassword; } set { strDBPassword = value; } }
+        [DataMember]
+        public string CustomerSite { get { return strCustomerSite; } set { strCustomerSite = value; } }
+        [DataMember]
+        public string LicenceKey { get { return strLicenceKey; } set { strLicenceKey = value; } }
+        [DataMember]
+        public string ComputerLocation { get { return strComputerLocation; } set { strComputerLocation = value; } }
+        [DataMember]
+        public List<string> Doctors { get { return strDoctors; } set { strDoctors = value; } }
+
+    }
+
+    [DataContract]
+    public class EMRParam
+    {
+        private string _DocumentNo;
+        private DateTime _DocumentDateTime;
+        private string _HN;
+        private string _AN;
+        private string _VN;
+        private DateTime _VisitDate;
+        private string _Clinic;
+        private string _Doctor;
+        private string _GeneralFacility;
+        private string _GeneralRef;
+
+        public EMRParam()
+        {
+            _DocumentNo = string.Empty;
+            _GeneralFacility = string.Empty;
+            _GeneralRef = string.Empty;
+            _DocumentDateTime = new DateTime();
+            _HN = string.Empty;
+            _AN = string.Empty;
+            _VN = string.Empty;
+            _VisitDate = new DateTime();
+            _Clinic = string.Empty;
+            _Doctor = string.Empty;
+        }
+
+        public string GeneralFacility { get { return _GeneralFacility; } set { _GeneralFacility = value; } }
+        public string GeneralRef { get { return _GeneralRef; } set { _GeneralRef = value; } }
+        public string DocumentNo { get { return _DocumentNo; } set { _DocumentNo = value; } }
+        public DateTime DocumentDateTime { get { return _DocumentDateTime; } set { _DocumentDateTime = value; } }
+        public string HN { get { return _HN; } set { _HN = value; } }
+        public string AN { get { return _AN; } set { _AN = value; } }
+        public string VN { get { return _VN; } set { _VN = value; } }
+        public DateTime VisitDate { get { return _VisitDate; } set { _VisitDate = value; } }
+        public string Clinic { get { return _Clinic; } set { _Clinic = value; } }
+        public string Doctor { get { return _Doctor; } set { _Doctor = value; } }
+
+    }
+
+    [DataContract]
+    public class InputDocumentEMRParam
+    {
+        private string _DocumentNo;
+        private DateTime _DocumentDateTime;
+        private string _HN;
+        private string _AN;
+        private string _VN;
+        private DateTime _VisitDate;
+        private string _Clinic;
+        private string _Doctor;
+        private string _Memo;
+        private object _Document;
+        private object _Thumbnail;
+        private string _EntrybyUserCode;
+        private DateTime _EntryDateTime;
+        private byte _DocumentType;
+        private string _Folder1;
+        private string _Folder2;
+        private string _Folder3;
+        private string _FileName;
+        private string _GeneralFacility;
+        private string _GeneralRef;
+        private Enum.Hospital.ImportDocumentType _ImportDocumentType; //VVX
+        private Byte _Compress; //VVX
+        //private Byte _IsPDF; //VVX
+
+        public InputDocumentEMRParam()
+        {
+            _DocumentNo = string.Empty;
+            _DocumentDateTime = new DateTime();
+            _HN = string.Empty;
+            _AN = string.Empty;
+            _VN = string.Empty;
+            _VisitDate = new DateTime();
+            _Clinic = string.Empty;
+            _Doctor = string.Empty;
+            _Memo = string.Empty;
+            _Document = null;
+            _Thumbnail = null;
+            _EntrybyUserCode = string.Empty;
+            _EntryDateTime = new DateTime();
+            _DocumentType = (byte)0;
+            _Folder1 = string.Empty;
+            _Folder2 = string.Empty;
+            _Folder3 = string.Empty;
+            _FileName = string.Empty;
+            _ImportDocumentType = Enum.Hospital.ImportDocumentType.None;
+            _GeneralFacility = string.Empty;
+            _GeneralRef = string.Empty;
+            _Compress = (byte)1;
+        }
+
+        public string DocumentNo { get { return _DocumentNo; } set { _DocumentNo = value; } }
+        public DateTime DocumentDateTime { get { return _DocumentDateTime; } set { _DocumentDateTime = value; } }
+        public string HN { get { return _HN; } set { _HN = value; } }
+        public string AN { get { return _AN; } set { _AN = value; } }
+        public string VN { get { return _VN; } set { _VN = value; } }
+        public DateTime VisitDate { get { return _VisitDate; } set { _VisitDate = value; } }
+        public string Clinic { get { return _Clinic; } set { _Clinic = value; } }
+        public string Doctor { get { return _Doctor; } set { _Doctor = value; } }
+        public object Document { get { return _Document; } set { _Document = value; } }
+        public object Thumbnail { get { return _Thumbnail; } set { _Thumbnail = value; } }
+        public DateTime EntryDateTime { get { return _EntryDateTime; } set { _EntryDateTime = value; } }
+        public string EntrybyUserCode { get { return _EntrybyUserCode; } set { _EntrybyUserCode = value; } }
+        public string Memo { get { return _Memo; } set { _Memo = value; } }
+        public byte DocumentType { get { return _DocumentType; } set { _DocumentType = value; } }
+        public string Folder1 { get { return _Folder1; } set { _Folder1 = value; } }
+        public string Folder2 { get { return _Folder2; } set { _Folder2 = value; } }
+        public string Folder3 { get { return _Folder3; } set { _Folder3 = value; } }
+        public string FileName { get { return _FileName; } set { _FileName = value; } }
+        public Enum.Hospital.ImportDocumentType ImportDocumentType { get { return _ImportDocumentType; } set { _ImportDocumentType = value; } }
+        public string GeneralFacility { get { return _GeneralFacility; } set { _GeneralFacility = value; } }
+        public string GeneralRef { get { return _GeneralRef; } set { _GeneralRef = value; } }
+        public byte Compress { get { return _Compress; } set { _Compress = value; } }
+    }
+
+    [DataContract]
+    public class ResultAdmitInfo
+    {
+        bool boolAuthenUser = true;
+        string strMsgError = string.Empty;
+
+        string strHN = string.Empty;
+        string strAN = string.Empty;
+        string strPatientName = string.Empty;
+        string strBedNo = string.Empty;
+        string strLocation = string.Empty;
+        string strMasterDoctor = string.Empty;
+        string strUsedRightCode = string.Empty;
+        string strGender = string.Empty;
+        string strPatientImage = string.Empty;
+
+
+        [DataMember]
+        public bool AuthenUser { get { return boolAuthenUser; } set { boolAuthenUser = value; } }
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+
+        [DataMember]
+        public string HN { get { return strHN; } set { strHN = value; } }
+        [DataMember]
+        public string AN { get { return strAN; } set { strAN = value; } }
+        [DataMember]
+        public string PatientName { get { return strPatientName; } set { strPatientName = value; } }
+        [DataMember]
+        public string ActiveBedNo { get { return strBedNo; } set { strBedNo = value; } }
+        [DataMember]
+        public string MasterDoctorName { get { return strMasterDoctor; } set { strMasterDoctor = value; } }
+        [DataMember]
+        public string UsedRightCode { get { return strUsedRightCode; } set { strUsedRightCode = value; } }
+        [DataMember]
+        public string Gender { get { return strGender; } set { strGender = value; } }
+        [DataMember]
+        public string PatientImage { get { return strPatientImage; } set { strPatientImage = value; } }
+    }
+
+    [DataContract]
+    public class ResultAuthenUserParam
+    {
+        string boolAuthenUser = "false";
+        string strMsgError = string.Empty;
+        string strUserName = string.Empty;
+        string strCustomerSiteName = string.Empty;
+        string strImgCustomer = string.Empty;
+        string strComputerLocation = string.Empty;
+        List<string> strDoctors = new List<string>();
+        List<string> strClinics = new List<string>();
+
+        [DataMember]
+        public string AuthenUser { get { return boolAuthenUser; } set { boolAuthenUser = value; } }
+        [DataMember]
+        public string UserName { get { return strUserName; } set { strUserName = value; } }
+        [DataMember]
+        public string CustomerSiteName { get { return strCustomerSiteName; } set { strCustomerSiteName = value; } }
+        [DataMember]
+        public string strImageCustomer { get { return strImgCustomer; } set { strImgCustomer = value; } }
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+        [DataMember]
+        public string ComputerLocation { get { return strComputerLocation; } set { strComputerLocation = value; } }
+        [DataMember]
+        public List<string> Doctors { get { return strDoctors; } set { strDoctors = value; } }
+        [DataMember]
+        public List<string> Clinics { get { return strClinics; } set { strClinics = value; } }
+    }
+
+    [DataContract]
+    public class ResultPatientInfo
+    {
+        string strMsgError = string.Empty;
+        string strPatientName = string.Empty;
+        string strPatientAge = string.Empty;
+        string strRightMemo = string.Empty;
+        string strLastOperation = string.Empty;
+        string strICDCM = string.Empty;
+        string strAllergy = string.Empty;
+        string strChronic = string.Empty;
+        string strPatientImage = string.Empty;
+        string strVIP = string.Empty;
+        string strLastVisitDate = string.Empty;
+        string strLastAdmDate = string.Empty;
+        string strVisitDate = string.Empty;
+        string strBirthDate = string.Empty;
+        string strGender = string.Empty;
+        string strGenderName = string.Empty;
+        List<ResultIPDDrugHist> _ListOfResultIPDDrugHist = new List<ResultIPDDrugHist>();
+        List<XrayResult> _ListOfXrayResult = new List<XrayResult>();
+
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+        [DataMember]
+        public string VisitDate { get { return strVisitDate; } set { strVisitDate = value; } }
+        [DataMember]
+        public string PatientName { get { return strPatientName; } set { strPatientName = value; } }
+        [DataMember]
+        public string PatientAge { get { return strPatientAge; } set { strPatientAge = value; } }
+        [DataMember]
+        public string PatientImage { get { return strPatientImage; } set { strPatientImage = value; } }
+        [DataMember]
+        public string RightMemo { get { return strRightMemo; } set { strRightMemo = value; } }
+        [DataMember]
+        public string LastOperation { get { return strLastOperation; } set { strLastOperation = value; } }
+        [DataMember]
+        public string ICDCM { get { return strICDCM; } set { strICDCM = value; } }
+        [DataMember]
+        public string Allergy { get { return strAllergy; } set { strAllergy = value; } }
+        [DataMember]
+        public string Chronic { get { return strChronic; } set { strChronic = value; } }
+        [DataMember]
+        public string VIP { get { return strVIP; } set { strVIP = value; } }
+        [DataMember]
+        public string LastAdmDate { get { return strLastAdmDate; } set { strLastAdmDate = value; } }
+        [DataMember]
+        public string LastVisitDate { get { return strLastVisitDate; } set { strLastVisitDate = value; } }
+        [DataMember]
+        public string BirthDate { get { return strBirthDate; } set { strBirthDate = value; } }
+        [DataMember]
+        public string Gender { get { return strGender; } set { strGender = value; } }
+        [DataMember]
+        public string GenderName { get { return strGenderName; } set { strGenderName = value; } }
+        [DataMember]
+        public List<ResultIPDDrugHist> ListOfResultIPDDrugHist { get { return _ListOfResultIPDDrugHist; } set { _ListOfResultIPDDrugHist = value; } }
+        [DataMember]
+        public List<XrayResult> ListOfXrayResult { get { return _ListOfXrayResult; } set { _ListOfXrayResult = value; } }
+    }
+
+    [DataContract]
+    public class ResultIPDDrugHist
+    {
+        string strMsgError = string.Empty;
+        string strAn = string.Empty;
+        string strHeaderMakeDateTime = string.Empty;
+        string strMakeDateTime = string.Empty;
+        string strOffDateTime = string.Empty;
+        string strStockCode = string.Empty;
+        string strStore = string.Empty;
+        string strWard = string.Empty;
+        string strQty = string.Empty;
+        string strUnitPrice = string.Empty;
+        string strAmt = string.Empty;
+        string strUnitCode = string.Empty;
+        string strDoctor = string.Empty;
+        string strOrderByUserId = string.Empty;
+        string strOrderNo = string.Empty;
+        string strChargeCode = string.Empty;
+        string strOtherChargeCode = string.Empty;
+        string strConfirmChargeByUserId = string.Empty;
+        string strChargeVoucherNo = string.Empty;
+        string strDoseType = string.Empty;
+        string strDoseCode = string.Empty;
+        string strDoseQtyCode = string.Empty;
+        string strDoseUnitCode = string.Empty;
+        string strAuxLabel1 = string.Empty;
+        string strAuxLabel2 = string.Empty;
+        string strAuxLabel3 = string.Empty;
+        string strRightCode = string.Empty;
+        string strLotNo = string.Empty;
+        string strDoseMemo = string.Empty;
+        string strMedicineOrderType = string.Empty;			//define
+        string strHereMedicalSupply = string.Empty;
+        string strDrugInteraction = string.Empty;			//1:Interaction, 10:AgainstAllergicList, 11:Interaction+AgainstAllergicList
+        string strStockName = string.Empty;
+        string strUnitName = string.Empty;
+        string strDrugDetail = string.Empty;
+
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+
+        [DataMember]
+        public string An { get { return strAn; } set { strAn = value; } }
+        [DataMember]
+        public string HeaderMakeDateTime { get { return strHeaderMakeDateTime; } set { strHeaderMakeDateTime = value; } }
+        [DataMember]
+        public string MakeDateTime { get { return strMakeDateTime; } set { strMakeDateTime = value; } }
+        [DataMember]
+        public string OffDateTime { get { return strOffDateTime; } set { strOffDateTime = value; } }
+        [DataMember]
+        public string StockCode { get { return strStockCode; } set { strStockCode = value; } }
+        [DataMember]
+        public string Store { get { return strStore; } set { strStore = value; } }
+        [DataMember]
+        public string Ward { get { return strWard; } set { strWard = value; } }
+        [DataMember]
+        public string Qty { get { return strQty; } set { strQty = value; } }
+        [DataMember]
+        public string UnitPrice { get { return strUnitPrice; } set { strUnitPrice = value; } }
+        [DataMember]
+        public string Amt { get { return strAmt; } set { strAmt = value; } }
+        [DataMember]
+        public string UnitCode { get { return strUnitCode; } set { strUnitCode = value; } }
+        [DataMember]
+        public string Doctor { get { return strDoctor; } set { strDoctor = value; } }
+        [DataMember]
+        public string OrderByUserId { get { return strOrderByUserId; } set { strOrderByUserId = value; } }
+        [DataMember]
+        public string OrderNo { get { return strOrderNo; } set { strOrderNo = value; } }
+        [DataMember]
+        public string ChargeCode { get { return strChargeCode; } set { strChargeCode = value; } }
+        [DataMember]
+        public string OtherChargeCode { get { return strOtherChargeCode; } set { strOtherChargeCode = value; } }
+        [DataMember]
+        public string ConfirmChargeByUserId { get { return strConfirmChargeByUserId; } set { strConfirmChargeByUserId = value; } }
+        [DataMember]
+        public string ChargeVoucherNo { get { return strChargeVoucherNo; } set { strChargeVoucherNo = value; } }
+        [DataMember]
+        public string DoseType { get { return strDoseType; } set { strDoseType = value; } }
+        [DataMember]
+        public string DoseCode { get { return strDoseCode; } set { strDoseCode = value; } }
+        [DataMember]
+        public string DoseQtyCode { get { return strDoseQtyCode; } set { strDoseQtyCode = value; } }
+        [DataMember]
+        public string DoseUnitCode { get { return strDoseUnitCode; } set { strDoseUnitCode = value; } }
+        [DataMember]
+        public string AuxLabel1 { get { return strAuxLabel1; } set { strAuxLabel1 = value; } }
+        [DataMember]
+        public string AuxLabel2 { get { return strAuxLabel2; } set { strAuxLabel2 = value; } }
+        [DataMember]
+        public string AuxLabel3 { get { return strAuxLabel3; } set { strAuxLabel3 = value; } }
+        [DataMember]
+        public string RightCode { get { return strRightCode; } set { strRightCode = value; } }
+        [DataMember]
+        public string LotNo { get { return strLotNo; } set { strLotNo = value; } }
+        [DataMember]
+        public string DoseMemo { get { return strDoseMemo; } set { strDoseMemo = value; } }
+        [DataMember]
+        public string MedicineOrderType { get { return strMedicineOrderType; } set { strMedicineOrderType = value; } }			//define
+        [DataMember]
+        public string HereMedicalSupply { get { return strHereMedicalSupply; } set { strHereMedicalSupply = value; } }
+        [DataMember]
+        public string DrugInteraction { get { return strDrugInteraction; } set { strDrugInteraction = value; } }			//1:Interaction, 10:AgainstAllergicList, 11:Interaction+AgainstAllergicList
+        [DataMember]
+        public string StockName { get { return strStockName; } set { strStockName = value; } }
+        [DataMember]
+        public string UnitName { get { return strUnitName; } set { strUnitName = value; } }
+        [DataMember]
+        public string DrugDetail { get { return strDrugDetail; } set { strDrugDetail = value; } }
+    }
+
+    [DataContract]
+    public class ResultEmrDocument
+    {
+        string strMsgError = string.Empty;
+        string strHN = string.Empty;
+        string strDocumentNo = string.Empty;
+        DateTime dtDocumentDateTime = new DateTime();
+        DateTime dtVisitDate = new DateTime();
+        string strAN = string.Empty;
+        string strVN = string.Empty;
+        string strClinic = string.Empty;
+        string strDoctor = string.Empty;
+        string strDocumentFolder1 = string.Empty;
+        string strDocumentFolder2 = string.Empty;
+        string strDocumentFolder3 = string.Empty;
+        string strMemo = string.Empty;
+        string strDocumentDataBase64 = string.Empty;
+
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+        [DataMember]
+        public string HN { get { return strHN; } set { strHN = value; } }
+        [DataMember]
+        public string DocumentNo { get { return strDocumentNo; } set { strDocumentNo = value; } }
+        [DataMember]
+        public DateTime DocumentDateTime { get { return dtDocumentDateTime; } set { dtDocumentDateTime = value; } }
+        [DataMember]
+        public DateTime VisitDate { get { return dtVisitDate; } set { dtVisitDate = value; } }
+        [DataMember]
+        public string AN { get { return strAN; } set { strAN = value; } }
+        [DataMember]
+        public string VN { get { return strVN; } set { strVN = value; } }
+        [DataMember]
+        public string Clinic { get { return strClinic; } set { strClinic = value; } }
+        [DataMember]
+        public string Doctor { get { return strDoctor; } set { strDoctor = value; } }
+        [DataMember]
+        public string DocumentFolder1 { get { return strDocumentFolder1; } set { strDocumentFolder1 = value; } }
+        [DataMember]
+        public string DocumentFolder2 { get { return strDocumentFolder2; } set { strDocumentFolder2 = value; } }
+        [DataMember]
+        public string DocumentFolder3 { get { return strDocumentFolder3; } set { strDocumentFolder3 = value; } }
+        [DataMember]
+        public string Memo { get { return strMemo; } set { strMemo = value; } }
+        [DataMember]
+        public string DocumentDataBase64 { get { return strDocumentDataBase64; } set { strDocumentDataBase64 = value; } }
+
+    }
+
+    [DataContract]
+    public class LabRequest
+    {
+        string strFacilityRmsNo = string.Empty;
+        string strRequestNo = string.Empty;
+        string strRequestDoctor = string.Empty;
+        string strHN = string.Empty;
+        string strRightCode = string.Empty;
+        string strEntryDateTime = string.Empty;
+        string strReceiveSpecimenDateTime = string.Empty;
+        string strResultReady = string.Empty;
+        string strLabHead = string.Empty;
+        string strResult = string.Empty;
+        string strGroupRequestCode = string.Empty;
+        string strFacilityRmsNoName = string.Empty;
+
+        [DataMember]
+        public string FacilityRmsNo { get { return strFacilityRmsNo; } set { strFacilityRmsNo = value; } }
+        public string RequestNo { get { return strRequestNo; } set { strRequestNo = value; } }
+        public string RequestDoctor { get { return strRequestDoctor; } set { strRequestDoctor = value; } }
+        public string HN { get { return strHN; } set { strHN = value; } }
+        public string RightCode { get { return strRightCode; } set { strRightCode = value; } }
+        public string EntryDateTime { get { return strEntryDateTime; } set { strEntryDateTime = value; } }
+        public string ReceiveSpecimenDateTime { get { return strReceiveSpecimenDateTime; } set { strReceiveSpecimenDateTime = value; } }
+        public string ResultReady { get { return strResultReady; } set { strResultReady = value; } }
+        public string LabHead { get { return strLabHead; } set { strLabHead = value; } }
+        public string Result { get { return strResult; } set { strResult = value; } }
+        public string GroupRequestCode { get { return strGroupRequestCode; } set { strGroupRequestCode = value; } }
+        public string FacilityRmsNoName { get { return strFacilityRmsNoName; } set { strFacilityRmsNoName = value; } }
+    }
+
+    [DataContract]
+    public class LabResult
+    {
+        string strFacilityRmsNo = string.Empty;
+        string strRequestNo = string.Empty;
+        string strLabCode = string.Empty;
+        string strResultDateTime = string.Empty;
+        string strApproveDateTime = string.Empty;
+        string strResultValueFigure = string.Empty;
+        string strNormalValueFrom = string.Empty;
+        string strNormalValueTo = string.Empty;
+        string strResultValue = string.Empty;
+        string strPreviousResultValue = string.Empty;
+        string strGroupOfLabCode = string.Empty;
+        string strNormalResultValue = string.Empty;
+        string strLabRequestMethod = string.Empty;
+        string strHideResult = string.Empty;
+        string strResultClassified = string.Empty;
+        string strGroupRequestCode = string.Empty;
+        string strLABPRINTRESULTGROUPSTYLE = string.Empty;
+        string strLABPRINTRESULTSUBGROUPSTYLE = string.Empty;
+        string strLabPrintResultStyle = string.Empty;
+        string strRepeatAgain = string.Empty;
+        string strSpecimenSuffix = string.Empty;
+
+        [DataMember]
+        public string FacilityRmsNo { get { return strFacilityRmsNo; } set { strFacilityRmsNo = value; } }
+        [DataMember]
+        public string RequestNo { get { return strRequestNo; } set { strRequestNo = value; } }
+        [DataMember]
+        public string LabCode { get { return strLabCode; } set { strLabCode = value; } }
+        [DataMember]
+        public string ResultDateTime { get { return strResultDateTime; } set { strResultDateTime = value; } }
+        [DataMember]
+        public string ApproveDateTime { get { return strApproveDateTime; } set { strApproveDateTime = value; } }
+        [DataMember]
+        public string ResultValueFigure { get { return strResultValueFigure; } set { strResultValueFigure = value; } }
+        [DataMember]
+        public string NormalValueFrom { get { return strNormalValueFrom; } set { strNormalValueFrom = value; } }
+        [DataMember]
+        public string NormalValueTo { get { return strNormalValueTo; } set { strNormalValueTo = value; } }
+        [DataMember]
+        public string ResultValue { get { return strResultValue; } set { strResultValue = value; } }
+        [DataMember]
+        public string PreviousResultValue { get { return strPreviousResultValue; } set { strPreviousResultValue = value; } }
+        [DataMember]
+        public string GroupOfLabCode { get { return strGroupOfLabCode; } set { strGroupOfLabCode = value; } }
+        [DataMember]
+        public string NormalResultValue { get { return strNormalResultValue; } set { strNormalResultValue = value; } }
+        [DataMember]
+        public string LabRequestMethod { get { return strLabRequestMethod; } set { strLabRequestMethod = value; } }
+        [DataMember]
+        public string HideResult { get { return strHideResult; } set { strHideResult = value; } }
+        [DataMember]
+        public string ResultClassified { get { return strResultClassified; } set { strResultClassified = value; } }
+        [DataMember]
+        public string GroupRequestCode { get { return strGroupRequestCode; } set { strGroupRequestCode = value; } }
+        [DataMember]
+        public string LABPRINTRESULTGROUPSTYLE { get { return strLABPRINTRESULTGROUPSTYLE; } set { strLABPRINTRESULTGROUPSTYLE = value; } }
+        [DataMember]
+        public string LABPRINTRESULTSUBGROUPSTYLE { get { return strLABPRINTRESULTSUBGROUPSTYLE; } set { strLABPRINTRESULTSUBGROUPSTYLE = value; } }
+        [DataMember]
+        public string LabPrintResultStyle { get { return strLabPrintResultStyle; } set { strLabPrintResultStyle = value; } }
+        [DataMember]
+        public string RepeatAgain { get { return strRepeatAgain; } set { strRepeatAgain = value; } }
+        [DataMember]
+        public string SpecimenSuffix { get { return strSpecimenSuffix; } set { strSpecimenSuffix = value; } }
+    }
+
+    [DataContract]
+    public class LabOrganism
+    {
+        string strFacilityRmsNo = string.Empty;
+        string strRequestNo = string.Empty;
+        string strSuffix = string.Empty;
+        string strSpecimenID = string.Empty;
+        string strOrganismCode = string.Empty;
+        string strGradeCode = string.Empty;
+        string strRemarks = string.Empty;
+        string strLabCode = string.Empty;
+        string strNoDayGrowth = string.Empty;
+        string strbetaLactamase = string.Empty;
+
+        [DataMember]
+        public string FacilityRmsNo { get { return strFacilityRmsNo; } set { strFacilityRmsNo = value; } }
+        public string RequestNo { get { return strRequestNo; } set { strRequestNo = value; } }
+        public string Suffix { get { return strSuffix; } set { strSuffix = value; } }
+        public string SpecimenID { get { return strSpecimenID; } set { strSpecimenID = value; } }
+        public string OrganismCode { get { return strOrganismCode; } set { strOrganismCode = value; } }
+        public string GradeCode { get { return strGradeCode; } set { strGradeCode = value; } }
+        public string Remarks { get { return strRemarks; } set { strRemarks = value; } }
+        public string LabCode { get { return strLabCode; } set { strLabCode = value; } }
+        public string NoDayGrowth { get { return strNoDayGrowth; } set { strNoDayGrowth = value; } }
+        public string betaLactamase { get { return strbetaLactamase; } set { strbetaLactamase = value; } }
+
+    }
+
+    [DataContract]
+    public class LabSensitive
+    {
+        string strFacilityRmsNo = string.Empty;
+        string strRequestNo = string.Empty;
+        string strOrganismSuffix = string.Empty;
+        string strZoneDiameter = string.Empty;
+        string strAntiMicroBial = string.Empty;
+        string strMethodOfMedicine = string.Empty;
+        string strMIC = string.Empty;
+        string strBacteriaTestType = string.Empty;
+        string strResultSensitive = string.Empty;
+        string strSignType = string.Empty;
+
+        [DataMember]
+        public string FacilityRmsNo { get { return strFacilityRmsNo; } set { strFacilityRmsNo = value; } }
+        public string RequestNo { get { return strRequestNo; } set { strRequestNo = value; } }
+        public string OrganismSuffix { get { return strOrganismSuffix; } set { strOrganismSuffix = value; } }
+        public string ZoneDiameter { get { return strZoneDiameter; } set { strZoneDiameter = value; } }
+        public string AntiMicroBial { get { return strAntiMicroBial; } set { strAntiMicroBial = value; } }
+        public string MethodOfMedicine { get { return strMethodOfMedicine; } set { strMethodOfMedicine = value; } }
+        public string MIC { get { return strMIC; } set { strMIC = value; } }
+        public string BacteriaTestType { get { return strBacteriaTestType; } set { strBacteriaTestType = value; } }
+        public string ResultSensitive { get { return strResultSensitive; } set { strResultSensitive = value; } }
+        public string SignType { get { return strSignType; } set { strSignType = value; } }
+    }
+
+    [DataContract]
+    public class LabSpecimen
+    {
+        string strFacilityRmsNo = string.Empty;
+        string strRequestNo = string.Empty;
+        string strSuffix = string.Empty;
+        string strSpecimenCode = string.Empty;
+
+        [DataMember]
+        public string FacilityRmsNo { get { return strFacilityRmsNo; } set { strFacilityRmsNo = value; } }
+        public string RequestNo { get { return strRequestNo; } set { strRequestNo = value; } }
+        public string Suffix { get { return strSuffix; } set { strSuffix = value; } }
+        public string SpecimenCode { get { return strSpecimenCode; } set { strSpecimenCode = value; } }
+    }
+
+    [DataContract]
+    public class ParamEnquireStock
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string StockCodeOrName { get; set; }
+    }
+
+    [DataContract]
+    public class ResultStockInfo
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public List<StockInfo> ListOfStockInfo { get; set; }
+    }
+
+    [DataContract]
+    public class StockInfo
+    {
+        [DataMember]
+        public string index { get; set; }
+        [DataMember]
+        public string StockCode { get; set; }
+        [DataMember]
+        public string StockName { get; set; }
+        [DataMember]
+        public string MedicineCategory { get; set; }
+        [DataMember]
+        public string MedicineClassifiedType { get; set; }
+    }
+
+    [DataContract]
+    public class Employee
+    {
+        [DataMember]
+        public int EmployeeId { get; set; }
+        [DataMember]
+        public string FirstName { get; set; }
+        [DataMember]
+        public string LastName { get; set; }
+        [DataMember]
+        public string Address { get; set; }
+        [DataMember]
+        public string BloodGroup { get; set; }
+    }
+
+    [DataContract]
+    public class XrayResult
+    {
+        [DataMember]
+        public string FacilityRmsno { get; set; }
+        [DataMember]
+        public string RequestNo { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string XrayCode { get; set; }
+        [DataMember]
+        public string XrayName { get; set; }
+        [DataMember]
+        public string FacilityRmsName { get; set; }
+        [DataMember]
+        public string ResultMemo { get; set; }
+        [DataMember]
+        public string EntryDateTime { get; set; }
+        [DataMember]
+        public string ResultDateTime { get; set; }
+    }
+
+    [DataContract]
+    public class ResultIPDVitalSign
+    {
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public List<IPDVitalSign> ListOfIPDVitalSign { get; set; }
+    }
+
+    [DataContract]
+    public class IPDVitalSign
+    {
+        [DataMember]
+        public string An { get; set; }
+        [DataMember]
+        public string EntryDateTime { get; set; }
+        [DataMember]
+        public string TextPulseRate { get; set; }
+        [DataMember]
+        public string TextRespireRate { get; set; }
+        [DataMember]
+        public string BpHigh { get; set; }
+        [DataMember]
+        public string BpLow { get; set; }
+        [DataMember]
+        public string PostBpHigh { get; set; }
+        [DataMember]
+        public string PostBpLow { get; set; }
+        [DataMember]
+        public string BodyWeight { get; set; }
+        [DataMember]
+        public string Height { get; set; }
+        [DataMember]
+        public string Temperature { get; set; }
+        [DataMember]
+        public string Remarks { get; set; }
+    }
+
+
+    [DataContract]
+    public class ResultOPDVitalSign
+    {
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public List<OPDVitalSign> ListOfOPDVitalSign { get; set; }
+    }
+
+    [DataContract]
+    public class OPDVitalSign
+    {
+        [DataMember]
+        public string VN { get; set; }
+        [DataMember]
+        public string EntryDateTime { get; set; }
+        [DataMember]
+        public string TextPulseRate { get; set; }
+        [DataMember]
+        public string TextRespireRate { get; set; }
+        [DataMember]
+        public string BpHigh { get; set; }
+        [DataMember]
+        public string BpLow { get; set; }
+        [DataMember]
+        public string PostBpHigh { get; set; }
+        [DataMember]
+        public string PostBpLow { get; set; }
+        [DataMember]
+        public string BodyWeight { get; set; }
+        [DataMember]
+        public string Height { get; set; }
+        [DataMember]
+        public string Temperature { get; set; }
+        [DataMember]
+        public string Remarks { get; set; }
+    }
+
+
+    [DataContract]
+    public class ResultIPDLabResult
+    {
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public List<LabResultGroupByDate> ListOfLabResultGroupByDate { get; set; }
+    }
+
+    //#NewOPD
+    [DataContract]
+    public class ResultMobilegetListOPDPresscrip
+    {
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public List<ResultOPDPrescripInfo> ListOfResultOPDPrescripInfo { get; set; }
+    }
+
+    //#NewOPD
+    [DataContract]
+    public class ResultOPDPrescripInfo
+    {
+        bool boolAuthenUser = true;
+        string strMsgError = string.Empty;
+        ///
+        string strHN = string.Empty;
+        string strVN = string.Empty;
+        string strVisitDate = string.Empty;
+        string strPatientName = string.Empty;
+        string strPrescriptionNo = string.Empty;
+        string strClinic = string.Empty;
+        string strClinicName = string.Empty;
+        string strDoctor = string.Empty;
+        string strRightCode = string.Empty;
+        string strRightName = string.Empty;
+        string strGender = string.Empty;
+        string strGenderName = string.Empty;
+        string strPatientImage = string.Empty;
+        string strER = string.Empty;
+        string strOPDEmergencyType = string.Empty;
+        string strRemarksMemo = string.Empty;
+        string strNurseAckDateTime = string.Empty;
+        ///
+        [DataMember]
+        public bool AuthenUser { get { return boolAuthenUser; } set { boolAuthenUser = value; } }
+        [DataMember]
+        public string MsgError { get { return strMsgError; } set { strMsgError = value; } }
+        ///
+        [DataMember]
+        public string HN { get { return strHN; } set { strHN = value; } }
+        [DataMember]
+        public string VN { get { return strVN; } set { strVN = value; } }
+        [DataMember]
+        public string VisitDate { get { return strVisitDate; } set { strVisitDate = value; } }
+        [DataMember]
+        public string PatientName { get { return strPatientName; } set { strPatientName = value; } }
+        [DataMember]
+        public string PrescriptionNo { get { return strPrescriptionNo; } set { strPrescriptionNo = value; } }
+        [DataMember]
+        public string Doctor { get { return strDoctor; } set { strDoctor = value; } }
+        [DataMember]
+        public string RightCode { get { return strRightCode; } set { strRightCode = value; } }
+        [DataMember]
+        public string RightName { get { return strRightName; } set { strRightName = value; } }
+        [DataMember]
+        public string Clinic { get { return strClinic; } set { strClinic = value; } }
+        [DataMember]
+        public string ClinicName { get { return strClinicName; } set { strClinicName = value; } }
+        [DataMember]
+        public string Gender { get { return strGender; } set { strGender = value; } }
+        [DataMember]
+        public string GenderName { get { return strGenderName; } set { strGenderName = value; } }
+        [DataMember]
+        public string PatientImage { get { return strPatientImage; } set { strPatientImage = value; } }
+        [DataMember]
+        public string ER { get { return strER; } set { strER = value; } }
+        [DataMember]
+        public string OPDEmergencyType { get { return strOPDEmergencyType; } set { strOPDEmergencyType = value; } }
+        [DataMember]
+        public string RemarksMemo { get { return strRemarksMemo; } set { strRemarksMemo = value; } }
+        [DataMember]
+        public string NurseAckDateTime { get { return strNurseAckDateTime; } set { strNurseAckDateTime = value; } }
+    }
+
+    [DataContract]
+    public class LabResultGroupByDate
+    {
+        [DataMember]
+        public string ResultEntryDate { get; set; }
+        [DataMember]
+        public List<LabResult> ListOfLabResult { get; set; }
+    }
+
+    public enum HISServiceType : byte
+    {
+        HIS = (byte)0,
+        HIS32 = (byte)1,
+        HIS64 = (byte)2
+    }
+
+    [DataContract]
+    public class ResultOPDVisitDiagSumText
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ResultText { get; set; }
+    }
+
+    [DataContract]
+    public class ResultOPDVisitTreatmentSumText
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ResultText { get; set; }
+    }
+
+    [DataContract]
+    public class ResultOPDVisitTreatment
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<OPDVisitTreatment> ListOfOPDVisitTreatment { get; set; }
+    }
+
+    [DataContract]
+    public class OPDVisitTreatment
+    {
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember]
+        public byte SuffixTiny { get; set; }
+        [DataMember]
+        public string TreatmentCode { get; set; }
+        [DataMember]
+        public string TreatmentName { get; set; }
+        [DataMember]
+        public string ChargeCode { get; set; }
+        [DataMember]
+        public string ChargeCodeName { get; set; }
+        [DataMember]
+        public string Doctor { get; set; }
+        [DataMember]
+        public string DoctorName { get; set; }
+        [DataMember]
+        public string Remarks { get; set; }
+        [DataMember]
+        public string RightCode { get; set; }
+        [DataMember]
+        public string RightCodeName { get; set; }
+        [DataMember]
+        public double Amt { get; set; }
+        [DataMember]
+        public double Qty { get; set; }
+        [DataMember]
+        public byte HNChargeType { get; set; }
+        [DataMember]
+        public DateTime CxlDateTime { get; set; }
+    }
+
+    [DataContract]
+    public class ResultVisitMedicine
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string HtmlText { get; set; }
+        [DataMember]
+        public string SummText { get; set; }
+        [DataMember]
+        public List<VisitMedicine> ListOfVisitMedicine { get; set; }
+    }
+
+    [DataContract]
+    public class VisitMedicine
+    {
+        [DataMember]
+        public Int32 Suffix { get; set; }
+        [DataMember]
+        public string StockName { get; set; }
+        [DataMember]
+        public string StockCode { get; set; }
+        [DataMember]
+        public string DoseMemo { get; set; }
+    }
+
+    [DataContract]
+    public class ResultLabReq
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<LabReq> ListOfLabReq { get; set; }
+    }
+
+    [DataContract]
+    public class LabReq
+    {
+        [DataMember]
+        public string FacilityRmsNo { get; set; }
+        [DataMember]
+        public string RequestNo { get; set; }
+        [DataMember]
+        public string LabHead { get; set; }
+        [DataMember]
+        public string Result { get; set; }
+    }
+
+    [DataContract]
+    public class ResultLabResult64
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<ResultLabResultGroupByDate> ListOfResultLabResultGroupByDate { get; set; }
+    }
+
+    [DataContract]
+    public class ResultLabResultGroupByDate
+    {
+        [DataMember]
+        public string ResultDateTime { get; set; }
+        [DataMember]
+        public List<LabResult64> ListOfItemLabResult { get; set; }
+    }
+
+    [DataContract]
+    public class LabResult64
+    {
+        [DataMember]
+        public string FacilityRmsNo { get; set; }
+        [DataMember]
+        public string RequestNo { get; set; }
+        //[DataMember]
+        //public string SpecimenCode { get; set; }
+        //[DataMember]
+        //public string SpecimenID { get; set; }
+        [DataMember]
+        public string LabCode { get; set; }
+        [DataMember]
+        public string ResultDateTime { get; set; }
+        //[DataMember]
+        //public string ResultByLabPerson { get; set; }
+        //[DataMember]
+        //public string Remarks { get; set; }
+        //[DataMember]
+        //public string ConfirmByUserCode { get; set; }
+        //[DataMember]
+        //public string ApproveByUserCode { get; set; }
+        //[DataMember]
+        //public DateTime ConfirmDateTime { get; set; }
+        //[DataMember]
+        //public DateTime ApproveDateTime { get; set; }
+        //[DataMember]
+        //public string DisapproveResultCode { get; set; }
+        //[DataMember]
+        //public string DisapproveResultRemarks { get; set; }
+        //[DataMember]
+        //public byte FacilityResultType { get; set; }
+        //[DataMember]
+        //public byte LABResultClassifiedType { get; set; }
+        [DataMember]
+        public string ResultValue { get; set; }
+        //[DataMember]
+        //public string LongResultValue { get; set; }
+        [DataMember]
+        public string ResultClassifiedName { get; set; }
+        //[DataMember]
+        //public string SubsetResultValue { get; set; }
+        [DataMember]
+        public string NormalResultValue { get; set; }
+        [DataMember]
+        public string PreviousResultValue { get; set; }
+        //[DataMember]
+        //public DateTime PreviousResultDateTime { get; set; }
+        //[DataMember]
+        //public DateTime ReadResultDateTime { get; set; }
+        //[DataMember]
+        //public string ReadResultByUserCode { get; set; }
+        //[DataMember]
+        //public string LabCommentMemo { get; set; }
+        //[DataMember]
+        //public string LabCommentMemoFromLabRms { get; set; }
+        //[DataMember]
+        //public string ConclusionResult { get; set; }
+        //[DataMember]
+        //public string AdditionResultMemo { get; set; }
+        //[DataMember]
+        //public string ResultByUserCode { get; set; }
+    }
+
+    [DataContract]
+    public class ResultXray64
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public string HtmlText { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<ItemXrayResult> ListOfItemXrayResult { get; set; }
+    }
+
+    [DataContract]
+    public class ItemXrayResult
+    {
+        [DataMember]
+        public string FacilityRmsNo { get; set; }
+        [DataMember]
+        public string RequestNo { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public DateTime EntryDateTime { get; set; }
+        [DataMember]
+        public string ResultMemo { get; set; }
+        [DataMember]
+        public DateTime CxlDateTime { get; set; }
+        [DataMember]
+        public string CxlByUserCode { get; set; }
+        [DataMember]
+        public string XrayCodeCollection { get; set; }
+        [DataMember]
+        public byte HNLISResultReadyFlagType { get; set; }
+        [DataMember]
+        public string ResultDoctor { get; set; }
+        [DataMember]
+        public DateTime ConfirmResultDateTime { get; set; }
+    }
+
+
+
+    [DataContract]
+    public class ResultSetupInfo
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public List<SetupInfo> ListOfSetupInfo { get; set; }
+    }
+
+    [DataContract]
+    public class SetupInfo
+    {
+        [DataMember]
+        public string Code { get; set; }
+        [DataMember]
+        public string EnglishName { get; set; }
+        [DataMember]
+        public string LocalName { get; set; }
+        [DataMember]
+        public string NameShow { get; set; }
+    }
+
+    [DataContract]
+    public class ParmGetSetup
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public int ControlCode { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetMapDoseCode
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public byte Morning { get; set; }
+        [DataMember]
+        public byte Luanch { get; set; }
+        [DataMember]
+        public byte Dinner { get; set; }
+        [DataMember]
+        public byte Bed { get; set; }
+        [DataMember]
+        public byte DoseMealType { get; set; }
+        [DataMember]
+        public byte Lunch { get; set; }
+    }
+
+    [DataContract]
+    public class ResultMapDoseCode
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string DoseCode { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetMapDoseTypeByStockCategory
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string StockCode { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ResultMapDoseTypeByStockCategory
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string DoseType { get; set; }
+        [DataMember]
+        public string DoseTypeName { get; set; }
+        [DataMember]
+        public string MapDoseUnit1 { get; set; }
+        [DataMember]
+        public string MapDoseUnit2 { get; set; }
+        [DataMember]
+        public string MapDoseUnit3 { get; set; }
+        [DataMember]
+        public string MapDoseUnit4 { get; set; }
+        [DataMember]
+        public string MapDoseUnit5 { get; set; }
+        [DataMember]
+        public string MapDoseUnitName1 { get; set; }
+        [DataMember]
+        public string MapDoseUnitName2 { get; set; }
+        [DataMember]
+        public string MapDoseUnitName3 { get; set; }
+        [DataMember]
+        public string MapDoseUnitName4 { get; set; }
+        [DataMember]
+        public string MapDoseUnitName5 { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetStockUnit
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string StockCode { get; set; }
+    }
+
+    [DataContract]
+    public class ResultGetStockUnit
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string DefaultSmallestUnitCode { get; set; }
+        [DataMember]
+        public List<StockUnit> ListOfStockUnit { get; set; }
+    }
+
+    [DataContract]
+    public class StockUnit
+    {        
+        [DataMember]
+        public string UnitCode { get; set; }
+        [DataMember]
+        public string UnitName { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetStockLearnDose
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+
+        [DataMember]
+        public string StockCode { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string AN { get; set; }
+    }
+
+    [DataContract]
+    public class ResultGetStockLearnDose
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string DoseType { get; set; }
+        [DataMember]
+        public string DoseCode { get; set; }
+        [DataMember]
+        public string DoseQtyCode { get; set; }
+        [DataMember]
+        public string DoseUnitCode { get; set; }
+        [DataMember]
+        public string UnitCode { get; set; }
+        [DataMember]
+        public string Qty { get; set; }
+    }
+
+    [DataContract]
+    public class ResultDrugMethod
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }        
+        [DataMember]
+        public List<DrugMethodInfo> ListOfDrugMethodInfo { get; set; }
+    }
+
+    [DataContract]
+    public class DrugMethodInfo
+    {
+        [DataMember]
+        public string Code { get; set; }
+        [DataMember]
+        public string Name { get; set; }
+    }
+
+    [DataContract]
+    public class ResultDrugMethodDetail
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<DrugMethodDetailInfo> ListOfDrugMethodDetailInfo { get; set; }
+    }
+
+    [DataContract]
+    public class DrugMethodDetailInfo
+    {
+        [DataMember]
+        [DataNames("StockCode", "StockCode")]
+        public string StockCode { get; set; }
+
+        [DataMember]
+        [DataNames("StockName", "StockName")]
+        public string StockName { get; set; }
+
+        [DataMember]
+        [DataNames("MedicineCategory", "MedicineCategory")]
+        public string MedicineCategory { get; set; }
+
+        [DataMember]
+        [DataNames("DoseType", "DoseType")]
+        public string DoseType { get; set; }
+
+        [DataMember]
+        [DataNames("DoseTypeName", "DoseTypeName")]
+        public string DoseTypeName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseCode", "DoseCode")]
+        public string DoseCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseName", "DoseName")]
+        public string DoseName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseQtyCode", "DoseQtyCode")]
+        public string DoseQtyCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseQtyName", "DoseQtyName")]
+        public string DoseQtyName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseUnitCode", "DoseUnitCode")]
+        public string DoseUnitCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseUnitName", "DoseUnitName")]
+        public string DoseUnitName { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel1", "AuxLabel1")]
+        public string AuxLabel1 { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel2", "AuxLabel2")]
+        public string AuxLabel2 { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel3", "AuxLabel3")]
+        public string AuxLabel3 { get; set; }
+
+        [DataMember]
+        [DataNames("DoseMemo", "DoseMemo")]
+        public string DoseMemo { get; set; }
+
+        [DataMember]
+        [DataNames("UnitCode", "UnitCode")]
+        public string UnitCode { get; set; }
+
+        [DataMember]
+        [DataNames("UnitName", "UnitName")]
+        public string UnitName { get; set; }
+
+        [DataMember]
+        [DataNames("Qty", "Qty")]
+        public string Qty { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetMobileVNMedicine_Temp
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public byte Suffix { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+
+    }
+
+    [DataContract]
+    public class ResultPrescripTriage
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ER { get; set; }
+        [DataMember]
+        public string OPDEmergencyType { get; set; }
+    }
+    
+    [DataContract]
+    public class ResultMobileVNMedicine_Temp
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<MobileVNMedicine_TempInfo> ListOfVNMedicine { get; set; }
+    }
+
+    
+    [DataContract]
+    public class ParamUpdateMobileVNMedicine_Temp
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public List<MobileVNMedicine_TempInfo> ListOfVNMedicine { get; set; }
+    }
+
+    [DataContract]
+    public class ResultUpdateMobileVNMedicine_Temp
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+
+    [DataContract]
+    public class PostVNMedicineTempToHISMed
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string HN { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public byte Suffix { get; set; }
+        [DataMember]
+        public List<MobileVNMedicine_TempInfo> ListOfVNMedicine { get; set; }
+    }
+
+    [DataContract]
+    public class ResultPostVNMedicineTempToHISMed
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+    
+    [DataContract]
+    public class MobileVNMedicine_TempInfo
+    {
+        [DataMember]
+        [DataNames("ComputerLocation", "ComputerLocation")]
+        public string ComputerLocation { get; set; }
+
+        [DataMember]
+        [DataNames("ComputerLocationName", "ComputerLocationName")]
+        public string ComputerLocationName { get; set; }
+
+        [DataMember]
+        [DataNames("EntryByUserCode", "EntryByUserCode")]
+        public string EntryByUserCode { get; set; }
+
+        [DataMember]
+        [DataNames("EntryByUserName", "EntryByUserName")]
+        public string EntryByUserName { get; set; }
+
+        [DataMember]
+        [DataNames("VisitDate", "VisitDate")]
+        public string VisitDate { get; set; }
+
+        [DataMember]
+        [DataNames("Vn", "Vn")]
+        public string Vn { get; set; }
+
+        [DataMember]
+        [DataNames("Suffix", "Suffix")]
+        public string Suffix { get; set; }
+
+        [DataMember]
+        [DataNames("SubSuffix", "SubSuffix")]
+        public string SubSuffix { get; set; }
+
+        [DataMember]
+        [DataNames("StockCode", "StockCode")]
+        public string StockCode { get; set; }
+
+        [DataMember]
+        [DataNames("StockName", "StockName")]
+        public string StockName { get; set; }
+
+        [DataMember]
+        [DataNames("UnitCode", "UnitCode")]
+        public string UnitCode { get; set; }
+
+        [DataMember]
+        [DataNames("UnitName", "UnitName")]
+        public string UnitName { get; set; }
+
+        [DataMember]
+        [DataNames("Qty", "Qty")]
+        public string Qty { get; set; }
+
+        [DataMember]
+        [DataNames("DoseType", "DoseType")]
+        public string DoseType { get; set; }
+
+        [DataMember]
+        [DataNames("DoseTypeName", "DoseTypeName")]
+        public string DoseTypeName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseCode", "DoseCode")]
+        public string DoseCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseName", "DoseName")]
+        public string DoseName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseQtyCode", "DoseQtyCode")]
+        public string DoseQtyCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseQtyName", "DoseQtyName")]
+        public string DoseQtyName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseUnitCode", "DoseUnitCode")]
+        public string DoseUnitCode { get; set; }
+
+        [DataMember]
+        [DataNames("DoseUnitName", "DoseUnitName")]
+        public string DoseUnitName { get; set; }
+
+        [DataMember]
+        [DataNames("DoseMemo", "DoseMemo")]
+        public string DoseMemo { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel1Code", "AuxLabel1Code")]
+        public string AuxLabel1Code { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel1Name", "AuxLabel1Name")]
+        public string AuxLabel1Name { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel2Code", "AuxLabel2Code")]
+        public string AuxLabel2Code { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel2Name", "AuxLabel2Name")]
+        public string AuxLabel2Name { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel3Code", "AuxLabel3Code")]
+        public string AuxLabel3Code { get; set; }
+
+        [DataMember]
+        [DataNames("AuxLabel3Name", "AuxLabel3Name")]
+        public string AuxLabel3Name { get; set; }
+
+        [DataMember]
+        [DataNames("NoDayDose", "NoDayDose")]
+        public string NoDayDose { get; set; }
+
+        [DataMember]
+        [DataNames("EntryStyleType", "EntryStyleType")]
+        public string EntryStyleType { get; set; }
+
+        [DataMember]
+        [DataNames("Morning", "Morning")]
+        public string Morning { get; set; }
+        
+        [DataMember]
+        [DataNames("Lunch", "Lunch")]
+        public string Lunch { get; set; }
+
+        [DataMember]
+        [DataNames("Dinner", "Dinner")]
+        public string Dinner { get; set; }
+
+        [DataMember]
+        [DataNames("Bed", "Bed")]
+        public string Bed { get; set; }
+
+        [DataMember]
+        [DataNames("DoseMealType", "DoseMealType")]
+        public string DoseMealType { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGetHNOPD_prescrip_Ext
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ResultHNOPD_prescrip_Ext
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripExtInfo> ListOfPrescripExtInfo { get; set; }
+    }
+
+    [DataContract]
+    public class HNOPD_PrescripExtInfo
+    {
+        [DataMember]
+        [DataNames("VN", "VN")]
+        public string VN { get; set; }
+
+        [DataMember]
+        [DataNames("VisitDate", "VisitDate")]
+        public string VisitDate { get; set; }
+
+        [DataMember]
+        [DataNames("PrescriptionNo", "PrescriptionNo")]
+        public string PrescriptionNo { get; set; }
+
+        [DataMember]
+        [DataNames("AnotherAllergy", "AnotherAllergy")]
+        public string AnotherAllergy { get; set; }
+
+        [DataMember]
+        [DataNames("AnotherAllergyRemark", "AnotherAllergyRemark")]
+        public string AnotherAllergyRemark { get; set; }
+
+        [DataMember]
+        [DataNames("DrugsUsedRegularly", "DrugsUsedRegularly")]
+        public string DrugsUsedRegularly { get; set; }
+
+        [DataMember]
+        [DataNames("DrugsUsedRegularlyRemark", "DrugsUsedRegularlyRemark")]
+        public string DrugsUsedRegularlyRemark { get; set; }
+
+        [DataMember]
+        [DataNames("Operation", "Operation")]
+        public string Operation { get; set; }
+
+        [DataMember]
+        [DataNames("OperationRemark", "OperationRemark")]
+        public string OperationRemark { get; set; }
+
+        [DataMember]
+        [DataNames("Smoking", "Smoking")]
+        public string Smoking { get; set; }
+
+        [DataMember]
+        [DataNames("SmokingRemark", "SmokingRemark")]
+        public string SmokingRemark { get; set; }
+
+        [DataMember]
+        [DataNames("Alcohol", "Alcohol")]
+        public string Alcohol { get; set; }
+
+        [DataMember]
+        [DataNames("AlcoholRemark", "AlcoholRemark")]
+        public string AlcoholRemark { get; set; }
+
+        [DataMember]
+        [DataNames("FamilyIllness", "FamilyIllness")]
+        public string FamilyIllness { get; set; }
+
+        [DataMember]
+        [DataNames("FamilyIllnessRemark", "FamilyIllnessRemark")]
+        public string FamilyIllnessRemark { get; set; }
+
+        [DataMember]
+        [DataNames("CC", "CC")]
+        public string CC { get; set; }
+
+        [DataMember]
+        [DataNames("Chronic", "Chronic")]
+        public string Chronic { get; set; }
+
+        [DataMember]
+        [DataNames("ChronicRemark", "ChronicRemark")]
+        public string ChronicRemark { get; set; }
+    }
+
+    [DataContract]
+    public class ParamUpdateHNOPD_prescrip_Ext
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripExtInfo> ListOfPrescripExtInfo { get; set; }
+    }
+
+    [DataContract]
+    public class ResultUpdateHNOPD_prescrip_Ext
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+
+    [DataContract]
+    public class ParamGetHNOPD_prescrip_Memo
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember]
+        public byte MemoType { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ResultHNOPD_prescrip_Memo
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripMemoInfo> ListOfPrescripMemoInfo { get; set; }
+    }
+
+    [DataContract]
+    public class HNOPD_PrescripMemoInfo
+    {
+        [DataMember]
+        [DataNames("VN", "VN")]
+        public string VN { get; set; }
+
+        [DataMember]
+        [DataNames("VisitDate", "VisitDate")]
+        public string VisitDate { get; set; }
+
+        [DataMember]
+        [DataNames("PrescriptionNo", "PrescriptionNo")]
+        public string PrescriptionNo { get; set; }
+
+        [DataMember]
+        [DataNames("MemoType", "MemoType")]
+        public string MemoType { get; set; }
+
+        [DataMember]
+        [DataNames("Memo", "Memo")]
+        public string Memo { get; set; }
+
+        [DataMember]
+        [DataNames("MemoImage", "MemoImage")]
+        public string MemoImage { get; set; }
+    }
+
+    [DataContract]
+    public class ParamUpdateHNOPD_prescrip_Memo
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripMemoInfo> ListOfPrescripMemoInfo { get; set; }
+    }
+
+    [DataContract]
+    public class ResultUpdateHNOPD_prescrip_Memo
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+
+    [DataContract]
+    public class ParamGetHNOPD_prescrip
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ResultHNOPD_prescrip
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripInfo> ListOfPrescripInfo { get; set; }
+    }
+
+    [DataContract]
+    public class HNOPD_PrescripInfo
+    {
+        [DataMember]
+        [DataNames("VN", "VN")]
+        public string VN { get; set; }
+
+        [DataMember]
+        [DataNames("VisitDate", "VisitDate")]
+        public string VisitDate { get; set; }
+
+        [DataMember]
+        [DataNames("PrescriptionNo", "PrescriptionNo")]
+        public string PrescriptionNo { get; set; }
+
+        [DataMember]
+        [DataNames("ApproveDateTime", "ApproveDateTime")]
+        public string ApproveDateTime { get; set; }
+
+        [DataMember]
+        [DataNames("ApproveByUser", "ApproveByUser")]
+        public string ApproveByUser { get; set; }
+    }
+
+    [DataContract]
+    public class ParamUpdateHNOPD_prescrip
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public List<HNOPD_PrescripInfo> ListOfPrescripInfo { get; set; }
+    }
+
+    [DataContract]
+    public class ResultUpdateHNOPD_prescrip
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+    [DataContract]
+    public class ParamGenDrugLabel
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string DoseType { get; set; }
+        [DataMember]
+        public string DoseCode { get; set; }
+        [DataMember]
+        public string DoseQtyCode { get; set; }
+        [DataMember]
+        public string DoseUnitCode { get; set; }
+        [DataMember]
+        public string AuxLabel1 { get; set; }
+        [DataMember]
+        public string AuxLabel2 { get; set; }
+        [DataMember]
+        public string AuxLabel3 { get; set; }
+    }
+
+    [DataContract]
+    public class ResultGenDrugLabel
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string DoseMemo { get; set; }
+    }
+
+    [DataContract]
+    public class ResultCheckIsVNOut
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+    [DataContract]
+    public class ParamCheckIsVNOut
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ResultCheckCanPostMedicine
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }
+
+    [DataContract]
+    public class ParamCheckCanPostMedicine
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public string EntryByUserCode { get; set; }
+        [DataMember]
+        public string VisitDate { get; set; }
+        [DataMember]
+        public byte PrescriptionNo { get; set; }
+        [DataMember]
+        public string Vn { get; set; }
+        [DataMember]
+        public bool EnglishView { get; set; }
+    }
+
+    [DataContract]
+    public class ParamUpdateHISMedFromTemp
+    {
+        [DataMember]
+        public string context { get; set; }
+        [DataMember]
+        public bool English { get; set; }
+        [DataMember]
+        public string UserID { get; set; }
+        [DataMember]
+        public string ComputerLocation { get; set; }
+        [DataMember]
+        public string McAddress { get; set; }
+        [DataMember]
+        public List<MobileVNMedicine_TempInfo> ListOfVNMedicine { get; set; }
+    }
+
+    [DataContract]
+    public class ResultUpdateHISMedFromTemp
+    {
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public bool ResultStatus { get; set; }
+    }	
+}
