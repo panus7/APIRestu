@@ -76,6 +76,22 @@ namespace APIRestServiceRestaurant
            RequestFormat = WebMessageFormat.Json,
            ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateFinishCookItemOrder")]
+        UpdateOrder_Result UpdateFinishCookItemOrder(Data_ORDER_DETAIL_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateServeCookItemOrder")]
+        UpdateOrder_Result UpdateServeCookItemOrder(Data_ORDER_DETAIL_Param param);
+         
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
            UriTemplate = "UpdateCancelOrder")]
         UpdateOrder_Result UpdateCancelOrder(Data_ORDER_HEAD_Param param);
 

@@ -58,7 +58,7 @@ namespace APIRestServiceRestaurant
         public static string ORDER_DETAIL_Field_CxlUserID = "CxlUserID";
         public static string ORDER_DETAIL_Field_ChargeAmt = "ChargeAmt";        
         public static string ORDER_DETAIL_Field_FinishCookDateTime = "FinishCookDateTime";
-        public static string ORDER_DETAIL_Field_FinisCookUserID = "FinisCookUserID";
+        public static string ORDER_DETAIL_Field_FinishCookUserID = "FinishCookUserID";
         public static string ORDER_DETAIL_Field_ServeCookDateTime = "ServeCookDateTime";
         public static string ORDER_DETAIL_Field_ServeCookUserID = "ServeCookUserID";
 
@@ -129,7 +129,7 @@ namespace APIRestServiceRestaurant
         public string ChargeAmt { get; set; }
         public string Suffix { get; set; }
         public string FinishCookDateTime { get; set; }
-        public string FinisCookUserID { get; set; }
+        public string FinishCookUserID { get; set; }
         public string ServeCookDateTime { get; set; }
         public string ServeCookUserID { get; set; }
 
@@ -146,7 +146,7 @@ namespace APIRestServiceRestaurant
             Suffix = string.Empty;
             ///
             FinishCookDateTime = string.Empty;
-            FinisCookUserID = string.Empty;
+            FinishCookUserID = string.Empty;
             ServeCookDateTime = string.Empty;
             ServeCookUserID = string.Empty;
         } 
