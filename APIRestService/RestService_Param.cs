@@ -33,6 +33,123 @@ namespace APIRestServiceRestaurant
     //    ViewOrEditQuotation = 17,
     //} 
 
+    public static class TableName
+    {
+        public static string ORDER_HEAD = "ORDER_HEAD";
+        public static string ORDER_HEAD_Field_OrderNo = "OrderNo";
+        public static string ORDER_HEAD_Field_TableID = "TableID";
+        public static string ORDER_HEAD_Field_OrderDateTime = "OrderDateTime";
+        public static string ORDER_HEAD_Field_OrderByUserID = "OrderByUserID";
+        public static string ORDER_HEAD_Field_CxlDateTime = "CxlDateTime";
+        public static string ORDER_HEAD_Field_CxlUserID = "CxlUserID";
+        public static string ORDER_HEAD_Field_CookAckDateTime = "CookAckDateTim";
+        public static string ORDER_HEAD_Field_CookAckUserID = "CookAckUserID";
+        public static string ORDER_HEAD_Field_ReceiveDateTime = "ReceiveDateTime";
+        public static string ORDER_HEAD_Field_ReceiveUserID = "ReceiveUserID";
+
+        public static string ORDER_DETAIL="ORDER_DETAIL";
+        public static string ORDER_DETAIL_Field_OrderNo = "OrderNo";
+        public static string ORDER_DETAIL_Field_Suffix = "Suffix";
+        public static string ORDER_DETAIL_Field_MenuID = "MenuID";
+        public static string ORDER_DETAIL_Field_MenuMemo = "MenuMemo";
+        public static string ORDER_DETAIL_Field_CookAckDateTime = "CookAckDateTime";
+        public static string ORDER_DETAIL_Field_CookAckUserID = "CookAckUserID";
+        public static string ORDER_DETAIL_Field_CxlDateTime = "CxlDateTime";
+        public static string ORDER_DETAIL_Field_CxlUserID = "CxlUserID";
+        public static string ORDER_DETAIL_Field_ChargeAmt = "ChargeAmt";
+         
+        public static string RECEIVE_HEAD = "RECEIVE_HEAD";
+        public static string RECEIVE_HEAD_Field_RecevieNo = "RecevieNo";
+        public static string RECEIVE_HEAD_Field_TableID = "TableID";
+        public static string RECEIVE_HEAD_Field_CxlDateTime = "CxlDateTime";
+        public static string RECEIVE_HEAD_Field_CxlUserID = "CxlUserID";
+        public static string RECEIVE_HEAD_Field_ReceiveDateTime = "ReceiveDateTime";
+        public static string RECEIVE_HEAD_Field_ReceiveUserID = "ReceiveUserID";
+        public static string RECEIVE_HEAD_Field_ChargeAmt = "ChargeAmt";
+        public static string RECEIVE_HEAD_Field_DiscountAmt = "DiscountAmt";
+        public static string RECEIVE_HEAD_Field_TotalAmt = "TotalAmt";
+         
+        public static string RECEIVE_DETAIL = "RECEIVE_DETAIL";
+        public static string RECEIVE_DETAIL_Field_RecevieNo = "RecevieNo";
+        public static string RECEIVE_DETAIL_Field_Suffix = "Suffix";
+        public static string RECEIVE_DETAIL_Field_OrderNo = "OrderNo";
+        public static string RECEIVE_DETAIL_Field_ChargeAmt = "ChargeAmt";
+
+    }
+
+    public class Data_ORDER_HEAD_Param
+    {
+        public string OrderNo { get; set; }
+        public string TableID { get; set; }
+        public string OrderDateTime { get; set; }
+        public string OrderByUserID { get; set; }
+        public string CxlDateTime { get; set; }
+        public string CxlUserID { get; set; }
+        public string CookAckDateTime { get; set; }
+        public string CookAckUserID { get; set; }
+        public string ReceiveDateTime { get; set; }
+        public string ReceiveUserID { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItem { get; set; }
+
+        public Data_ORDER_HEAD_Param()
+        {
+            OrderNo = string.Empty;
+            TableID = string.Empty;
+            OrderDateTime = string.Empty;
+            OrderByUserID = string.Empty;
+            CxlDateTime = string.Empty;
+            CxlUserID = string.Empty;
+            CookAckDateTime = string.Empty;
+            CookAckUserID = string.Empty;
+            ReceiveDateTime = string.Empty;
+            ReceiveUserID = string.Empty;
+            ListOfItem = new List<Data_ORDER_DETAIL_Param>();
+        } 
+    }
+
+    public class Data_ORDER_DETAIL_Param
+    {
+        public string OrderNo { get; set; }
+        public string MenuID { get; set; }
+        public string MenuMemo { get; set; }
+        public string CookAckDateTime { get; set; }
+        public string CookAckUserID { get; set; }
+        public string CxlDateTime { get; set; }
+        public string CxlUserID { get; set; }
+        public string ChargeAmt { get; set; }
+        public string Suffix { get; set; }
+
+        public Data_ORDER_DETAIL_Param()
+        {
+            OrderNo = string.Empty;
+            MenuID = string.Empty;
+            MenuMemo = string.Empty;
+            CookAckDateTime = string.Empty;
+            CookAckUserID = string.Empty;
+            CxlDateTime = string.Empty;
+            CxlUserID = string.Empty;
+            ChargeAmt = string.Empty;
+            Suffix = string.Empty;
+        } 
+    }
+
+
+    public class UpdateOrder_Result
+    {
+        public string OrderNo { get; set; }
+        public string ErrorMessage { get; set; }
+        public bool ResultStatus { get; set; }
+
+        public UpdateOrder_Result()
+        {
+            OrderNo = string.Empty;
+            ErrorMessage = string.Empty;
+            ResultStatus = false;
+        }
+    }
+
+
+
 
     public class Param_MasterDataEnquiry
     {

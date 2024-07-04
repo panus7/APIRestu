@@ -492,7 +492,107 @@ namespace APIRestServiceRestaurant
 
         }
 
+        public static double getPrice(string strMenuID)
+        {
+            double dPrice = 0.0;
+
+
+
+            return dPrice;
+        }
+          
         #endregion [MASTER DATA]
+
+
+        #region [ORDER]
+
+        public UpdateOrder_Result UpdateNewOrder(Data_ORDER_HEAD_Param param)
+        {
+            UpdateOrder_Result result = new UpdateOrder_Result();
+            result.ResultStatus = false;
+
+            if (string.IsNullOrEmpty(param.TableID))
+            {
+                result.ErrorMessage = "TableID empty.";
+                return result;
+            }
+
+            if (null == param.ListOfItem || param.ListOfItem.Count == 0)
+            {
+                result.ErrorMessage = "Order Item empty.";
+                return result;
+            }
+
+            param.OrderNo = param.TableID + DateTime.Now.Ticks.ToString(); 
+
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+
+            DBCondition dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_OrderNo, DBComparisonOperator.EqualEver, param.OrderNo);
+             
+            string strErrorMessage = string.Empty;
+            DataTable xDataTable = condb.GetSchemaTable(TableName.ORDER_HEAD);
+            DataTable xDataTableItem = condb.GetSchemaTable(TableName.ORDER_DETAIL);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            DataRow xNewRow = xDataTable.NewRow();
+            xNewRow[TableName.ORDER_HEAD_Field_OrderNo] = param.OrderNo;
+            xNewRow[TableName.ORDER_HEAD_Field_TableID] = param.TableID;
+            xNewRow[TableName.ORDER_HEAD_Field_OrderByUserID] = param.OrderByUserID; 
+            xNewRow[TableName.ORDER_HEAD_Field_OrderDateTime] = DateTime.Now;
+            xDataTable.Rows.Add(xNewRow);
+             
+            int iSuffix = 1;
+            foreach (var itemData in param.ListOfItem)
+            {
+                if (string.IsNullOrEmpty(itemData.MenuID))
+                    continue;
+
+                xNewRow = xDataTableItem.NewRow();
+                xNewRow[TableName.ORDER_DETAIL_Field_OrderNo] = param.OrderNo;
+                xNewRow[TableName.ORDER_DETAIL_Field_Suffix] = iSuffix; 
+                xNewRow[TableName.ORDER_DETAIL_Field_OrderNo] = itemData.OrderNo;
+                xNewRow[TableName.ORDER_DETAIL_Field_MenuID] = itemData.MenuID;
+                xNewRow[TableName.ORDER_DETAIL_Field_MenuMemo] = itemData.MenuMemo;
+
+                if (string.IsNullOrEmpty(itemData.ChargeAmt))
+                {
+                    xNewRow[TableName.ORDER_DETAIL_Field_ChargeAmt] = getPrice(itemData.MenuID);
+                }
+                else
+                {
+                    xNewRow[TableName.ORDER_DETAIL_Field_ChargeAmt] = DxConvert.ConvertStringToDouble(itemData.ChargeAmt);
+                } 
+
+                xDataTable.Rows.Add(xNewRow); 
+            }
+
+            if (xDataTableItem.Rows.Count == 0)
+            {
+                result.ErrorMessage = "Order Item empty.";
+                return result;
+            }
+
+            DataSet ds = new DataSet();
+            ds.Tables.Add(xDataTable);
+            ds.Tables.Add(xDataTableItem);
+            condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+             
+            result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
+            return result; 
+        }
+         
+        #endregion [ORDER]
 
         public string GenQRBase64(string data)
         {
