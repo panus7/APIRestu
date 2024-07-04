@@ -919,8 +919,8 @@ namespace APIRestServiceRestaurant
 
             foreach (DataRow RowItem in xDataTableItem.Rows)
             {
-                RowItem[TableName.ORDER_DETAIL_Field_FinisCookUserID] = DateTime.Now;
-                RowItem[TableName.ORDER_DETAIL_Field_FinisCookUserID] = param.FinisCookUserID;
+                RowItem[TableName.ORDER_DETAIL_Field_FinishCookDateTime] = DateTime.Now;
+                RowItem[TableName.ORDER_DETAIL_Field_FinishCookUserID] = param.FinishCookUserID;
                 break;
             }
 
@@ -1182,9 +1182,9 @@ namespace APIRestServiceRestaurant
                 itemData.CxlUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CxlUserID]);
                 itemData.ChargeAmt = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_ChargeAmt]);
 
-                if (!string.IsNullOrEmpty(itemData.FinisCookUserID))
+                if (!string.IsNullOrEmpty(itemData.FinishCookUserID))
                 {
-                    result.ListOfItemAcked.Add(itemData);
+                    result.ListOfItemFinish.Add(itemData);
                 }
                 else if (!string.IsNullOrEmpty(itemData.CookAckDateTime))
                 {
