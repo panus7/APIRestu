@@ -9,7 +9,7 @@ using System.ServiceModel;
 using System.ServiceModel.Web;
 using System.Text;
 
-namespace APIRestServiceRestaurant
+namespace APIRestService
 {
     //public enum Enum_QuotationLogType : byte
     //{
@@ -42,7 +42,7 @@ namespace APIRestServiceRestaurant
         public static string ORDER_HEAD_Field_OrderByUserID = "OrderByUserID";
         public static string ORDER_HEAD_Field_CxlDateTime = "CxlDateTime";
         public static string ORDER_HEAD_Field_CxlUserID = "CxlUserID";
-        public static string ORDER_HEAD_Field_CookAckDateTime = "CookAckDateTim";
+        public static string ORDER_HEAD_Field_CookAckDateTime = "CookAckDateTime";
         public static string ORDER_HEAD_Field_CookAckUserID = "CookAckUserID";
         public static string ORDER_HEAD_Field_ReceiveDateTime = "ReceiveDateTime";
         public static string ORDER_HEAD_Field_ReceiveUserID = "ReceiveUserID";
@@ -52,6 +52,8 @@ namespace APIRestServiceRestaurant
         public static string ORDER_DETAIL_Field_Suffix = "Suffix";
         public static string ORDER_DETAIL_Field_MenuID = "MenuID";
         public static string ORDER_DETAIL_Field_MenuMemo = "MenuMemo";
+        public static string ORDER_DETAIL_Field_Qty = "Qty";
+        public static string ORDER_DETAIL_Field_EntryDateTime = "EntryDateTime";
         public static string ORDER_DETAIL_Field_CookAckDateTime = "CookAckDateTime";
         public static string ORDER_DETAIL_Field_CookAckUserID = "CookAckUserID";
         public static string ORDER_DETAIL_Field_CxlDateTime = "CxlDateTime";
@@ -95,7 +97,7 @@ namespace APIRestServiceRestaurant
         public string ReceiveUserID { get; set; }
         public string ChargeAmt { get; set; }
         public string TotalAmt { get; set; }
-        public string DiscountAmt { get; set; }
+        public string DiscountAmt { get; set; } 
         public List<Data_ORDER_DETAIL_Param> ListOfItem { get; set; }
 
         public Data_ORDER_HEAD_Param()
@@ -112,7 +114,7 @@ namespace APIRestServiceRestaurant
             ReceiveUserID = string.Empty;
             ChargeAmt = string.Empty;
             TotalAmt = string.Empty;
-            DiscountAmt = string.Empty;
+            DiscountAmt = string.Empty; 
             ListOfItem = new List<Data_ORDER_DETAIL_Param>();
         } 
     }
@@ -122,6 +124,8 @@ namespace APIRestServiceRestaurant
         public string OrderNo { get; set; }
         public string MenuID { get; set; }
         public string MenuMemo { get; set; }
+        public string Qty { get; set; }
+        public string EntryDateTime { get; set; }
         public string CookAckDateTime { get; set; }
         public string CookAckUserID { get; set; }
         public string CxlDateTime { get; set; }
@@ -138,12 +142,14 @@ namespace APIRestServiceRestaurant
             OrderNo = string.Empty;
             MenuID = string.Empty;
             MenuMemo = string.Empty;
+            EntryDateTime = string.Empty;
             CookAckDateTime = string.Empty;
             CookAckUserID = string.Empty;
             CxlDateTime = string.Empty;
             CxlUserID = string.Empty;
             ChargeAmt = string.Empty;
             Suffix = string.Empty;
+            Qty = string.Empty;
             ///
             FinishCookDateTime = string.Empty;
             FinishCookUserID = string.Empty;
@@ -225,73 +231,111 @@ namespace APIRestServiceRestaurant
             ListOfItemFinish = new List<Data_ORDER_DETAIL_Param>();
         }
     }
-
-
-    
-
-
+     
+    [DataContract]
     public class Param_MasterDataEnquiry
     {
+        [DataMember]
         public string ConnectKey { get; set; }
+        [DataMember]
         public string MasterType { get; set; }
+        [DataMember]
         public string MasterID { get; set; }
+        [DataMember]
         public string MasterIDLike { get; set; }
+        [DataMember]
         public string MasterNameThai { get; set; }
+        [DataMember]
         public string MasterNameEnglish { get; set; }
+        [DataMember]
         public string MasterData { get; set; }
     }
 
+    [DataContract]
     public class Result_MasterDataEnquiry
     {
+        [DataMember]
         public string ErrorMessage { get; set; }
+        [DataMember]
         public bool Status { get; set; }
+        [DataMember]
         public List<MasterDataDetail> ListOfData { get; set; }
     }
 
+    [DataContract]
     public class MasterDataDetail
     {
+        [DataMember]
         public string MasterType { get; set; }
+        [DataMember]
         public string MasterID { get; set; }
+        [DataMember]
         public string MasterNameThai { get; set; }
+        [DataMember]
         public string MasterNameEnglish { get; set; }
+        [DataMember]
         public string MasterData { get; set; }
+        [DataMember]
         public string ImageData { get; set; }
+        [DataMember]
         public string ItemImageData { get; set; }
     }
 
+    [DataContract]
     public class Update_MasterDataDetail
     {
+        [DataMember]
         public string MasterType { get; set; }
+        [DataMember]
         public string MasterID { get; set; }
+        [DataMember]
         public string MasterNameThai { get; set; }
+        [DataMember]
         public string MasterNameEnglish { get; set; }
+        [DataMember]
         public string MasterData { get; set; }
+        [DataMember]
         public string ImageData { get; set; }
+        [DataMember]
         public string ItemImageData { get; set; } //ProfileUser
     }
 
+    [DataContract]
     public class Result_Update_MasterDataDetail
     {
+        [DataMember]
         public string ErrorMessage { get; set; }
+        [DataMember]
         public bool Status { get; set; }
     }
-     
-       
+
+
+    [DataContract]
     public class MasterDataUser_Result
     {
+        [DataMember]
         public string UserID { get; set; }
+        [DataMember]
         public string UserName { get; set; }
+        [DataMember]
         public string UserNameThai { get; set; }
+        [DataMember]
         public string UserEmail { get; set; }
+        [DataMember]
         public string UserIDType { get; set; }
+        [DataMember]
         public byte[] ImageData { get; set; }
 
     }
 
+    [DataContract]
     public class MasterData_UserInfo
     {
+        [DataMember]
         public string UserID { get; set; }
+        [DataMember]
         public string UserPassword { get; set; }
+        [DataMember]
         public string UserIDType { get; set; }
 
         public MasterData_UserInfo()
@@ -302,21 +346,34 @@ namespace APIRestServiceRestaurant
         }
     }
 
+    [DataContract]
     public class MasterData_MenuInfo
     {
+        [DataMember]
         public string MenuCode { get; set; }
+        [DataMember]
         public string MenuNameShow { get; set; }
+        [DataMember]
         public string MenuNameShowThai { get; set; }
-
+        [DataMember]
         public string MenuType { get; set; }
+        [DataMember]
         public string MenuDescrption { get; set; }
+        [DataMember]
         public string MenuImage { get; set; }
+        [DataMember]
         public string Price { get; set; }
+        [DataMember]
         public string Cost { get; set; }
+        [DataMember]
         public string StockIngredient1 { get; set; }
+        [DataMember]
         public string StockIngredient2 { get; set; }
+        [DataMember]
         public string StockIngredient3 { get; set; }
+        [DataMember]
         public string StockIngredient4 { get; set; }
+        [DataMember]
         public string StockIngredient5 { get; set; }
 
         public MasterData_MenuInfo()
@@ -337,10 +394,15 @@ namespace APIRestServiceRestaurant
         }
     }
 
+
+    [DataContract]
     public class MasterData_StockInfo
-    { 
-        public string StockDescrption { get; set; } 
+    {
+        [DataMember]
+        public string StockDescrption { get; set; }
+        [DataMember]
         public string Price { get; set; }
+        [DataMember]
         public string Cost { get; set; } 
 
         public MasterData_StockInfo()
@@ -350,7 +412,9 @@ namespace APIRestServiceRestaurant
             Cost = string.Empty; 
         }
     }
-     
+
+
+    [DataContract]
     public class EnquireMenu_Param
     {
         [DataMember]
@@ -371,6 +435,8 @@ namespace APIRestServiceRestaurant
         }
     }
 
+
+    [DataContract]
     public class EnquireMenu_Result
     {
         [DataMember]

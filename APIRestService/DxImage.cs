@@ -11,7 +11,7 @@ using System.Windows.Forms;
 using ZXing;
 using ZXing.QrCode;
 
-namespace APIRestServiceRestaurant
+namespace APIRestService
 {
     public class DxImage
     {  

@@ -15,7 +15,7 @@ using System.Xml;
 using System.Drawing;
 using Newtonsoft.Json;
 
-namespace APIRestServiceRestaurant
+namespace APIRestService
 {
     public class DxData {
 
@@ -27,7 +27,7 @@ namespace APIRestServiceRestaurant
             if (null == objRowValue)
                 return string.Empty;
 
-            return objRowValue.ToString().Trim();
+            return objRowValue.ToString().Trim().Replace('^','"');
         }
 
         public static int getValueInt(object objRowValue)

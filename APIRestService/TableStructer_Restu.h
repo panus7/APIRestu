@@ -15,14 +15,16 @@ PRIMARYKEY=OrderNo
 TABLE=ORDER_DETAIL
 FIELD=OrderNo,			TYPE=varchar,SIZE= 60 //TableID-TimeTick
 FIELD=Suffix,			TYPE=int
+FIELD=Qty,				TYPE=int
 FIELD=MenuID,			TYPE=varchar, SIZE=30
 FIELD=MenuMemo,			TYPE=varchar, SIZE=300
 FIELD=CookAckDateTime,	TYPE=datetime
-FIELD=CookAckUserID,	TYPE=varchar, SIZE=20
+FIELD=CookAckUserID,	TYPE=varchar, SIZE=20 
+FIELD=EntryDateTime,		TYPE=datetime
 FIELD=FinishCookDateTime,	TYPE=datetime
-FIELD=FinisCookUserID,		TYPE=varchar, SIZE=20
+FIELD=FinishCookUserID,		TYPE=varchar, SIZE=20
 FIELD=ServeCookDateTime,	TYPE=datetime
-FIELD=ServeCookUserID,		TYPE=varchar, SIZE=20
+FIELD=ServeCookUserID,		TYPE=varchar, SIZE=20 
 FIELD=CxlDateTime,		TYPE=datetime
 FIELD=CxlUserID,		TYPE=varchar, SIZE=20
 FIELD=ChargeAmt,		TYPE=float

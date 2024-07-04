@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
-namespace APIRestServiceRestaurant
+namespace APIRestService
 {
     public class DxGenerate
     {

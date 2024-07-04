@@ -11,8 +11,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>APIRestServiceRestaurant</RootNamespace>
-    <AssemblyName>APIRestServiceRestaurant</AssemblyName>
+    <RootNamespace>APIRestService</RootNamespace>
+    <AssemblyName>APIRestService</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
     <UseIISExpress>true</UseIISExpress>
@@ -38,7 +38,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Library_Release\</OutputPath>
+    <OutputPath>.\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -108,8 +108,8 @@
     <Compile Include="RestService.svc.cs">
       <DependentUpon>RestService.svc</DependentUpon>
     </Compile>
-    <Compile Include="RestService_Param.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RestService_Param.cs" />
     <Compile Include="ServiceUtil.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -143,7 +143,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>61363</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:6116/</IISUrl>
+          <IISUrl>http://localhost:6118/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

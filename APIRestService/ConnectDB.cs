@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Xml;
 
-namespace APIRestServiceRestaurant
+namespace APIRestService
 {
 
     public class ConnectDB
