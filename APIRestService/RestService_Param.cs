@@ -56,8 +56,12 @@ namespace APIRestServiceRestaurant
         public static string ORDER_DETAIL_Field_CookAckUserID = "CookAckUserID";
         public static string ORDER_DETAIL_Field_CxlDateTime = "CxlDateTime";
         public static string ORDER_DETAIL_Field_CxlUserID = "CxlUserID";
-        public static string ORDER_DETAIL_Field_ChargeAmt = "ChargeAmt";
-         
+        public static string ORDER_DETAIL_Field_ChargeAmt = "ChargeAmt";        
+        public static string ORDER_DETAIL_Field_FinishCookDateTime = "FinishCookDateTime";
+        public static string ORDER_DETAIL_Field_FinisCookUserID = "FinisCookUserID";
+        public static string ORDER_DETAIL_Field_ServeCookDateTime = "ServeCookDateTime";
+        public static string ORDER_DETAIL_Field_ServeCookUserID = "ServeCookUserID";
+
         public static string RECEIVE_HEAD = "RECEIVE_HEAD";
         public static string RECEIVE_HEAD_Field_RecevieNo = "RecevieNo";
         public static string RECEIVE_HEAD_Field_TableID = "TableID";
@@ -89,6 +93,9 @@ namespace APIRestServiceRestaurant
         public string CookAckUserID { get; set; }
         public string ReceiveDateTime { get; set; }
         public string ReceiveUserID { get; set; }
+        public string ChargeAmt { get; set; }
+        public string TotalAmt { get; set; }
+        public string DiscountAmt { get; set; }
         public List<Data_ORDER_DETAIL_Param> ListOfItem { get; set; }
 
         public Data_ORDER_HEAD_Param()
@@ -103,6 +110,9 @@ namespace APIRestServiceRestaurant
             CookAckUserID = string.Empty;
             ReceiveDateTime = string.Empty;
             ReceiveUserID = string.Empty;
+            ChargeAmt = string.Empty;
+            TotalAmt = string.Empty;
+            DiscountAmt = string.Empty;
             ListOfItem = new List<Data_ORDER_DETAIL_Param>();
         } 
     }
@@ -118,6 +128,10 @@ namespace APIRestServiceRestaurant
         public string CxlUserID { get; set; }
         public string ChargeAmt { get; set; }
         public string Suffix { get; set; }
+        public string FinishCookDateTime { get; set; }
+        public string FinisCookUserID { get; set; }
+        public string ServeCookDateTime { get; set; }
+        public string ServeCookUserID { get; set; }
 
         public Data_ORDER_DETAIL_Param()
         {
@@ -130,10 +144,14 @@ namespace APIRestServiceRestaurant
             CxlUserID = string.Empty;
             ChargeAmt = string.Empty;
             Suffix = string.Empty;
+            ///
+            FinishCookDateTime = string.Empty;
+            FinisCookUserID = string.Empty;
+            ServeCookDateTime = string.Empty;
+            ServeCookUserID = string.Empty;
         } 
     }
-
-
+     
     public class UpdateOrder_Result
     {
         public string OrderNo { get; set; }
@@ -149,6 +167,67 @@ namespace APIRestServiceRestaurant
     }
 
 
+    public class EnquireOrderSummary_Param
+    {
+        public string TableID { get; set; }
+
+        public EnquireOrderSummary_Param()
+        {
+            TableID = string.Empty;
+        }
+    }
+
+    public class EnquireOrderSummary_Result
+    { 
+        public string ErrorMessage { get; set; }
+        public bool ResultStatus { get; set; }
+        public string TotalChargeAmt { get; set; }
+        public string DiscountChargeAmt { get; set; }
+        public string ChargeAmt { get; set; }
+        public List<Data_ORDER_HEAD_Param> ListOfSummaryOrder { get; set; }
+
+        public EnquireOrderSummary_Result()
+        {
+            TotalChargeAmt = string.Empty;
+            DiscountChargeAmt = string.Empty;
+            ChargeAmt = string.Empty;
+            ErrorMessage = string.Empty;
+            ResultStatus = false;
+            ListOfSummaryOrder = new List<Data_ORDER_HEAD_Param>();
+        }
+    }
+
+
+    public class EnquireOrderCooking_Param
+    {
+        public string TableID { get; set; }
+
+        public EnquireOrderCooking_Param()
+        {
+            TableID = string.Empty;
+        }
+    }
+
+    public class EnquireOrderCooking_Result
+    {
+        public string ErrorMessage { get; set; }
+        public bool ResultStatus { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItemWaitAck { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItemAcked { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItemFinish { get; set; }
+
+        public EnquireOrderCooking_Result()
+        {
+            ErrorMessage = string.Empty;
+            ResultStatus = false;
+            ListOfItemWaitAck = new List<Data_ORDER_DETAIL_Param>();
+            ListOfItemAcked = new List<Data_ORDER_DETAIL_Param>();
+            ListOfItemFinish = new List<Data_ORDER_DETAIL_Param>();
+        }
+    }
+
+
+    
 
 
     public class Param_MasterDataEnquiry

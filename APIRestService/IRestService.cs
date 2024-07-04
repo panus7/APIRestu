@@ -54,8 +54,65 @@ namespace APIRestServiceRestaurant
            BodyStyle = WebMessageBodyStyle.WrappedRequest,
            UriTemplate = "EnquireMenu")]
         EnquireMenu_Result EnquireMenu(EnquireMenu_Param param);
-         
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateNewOrder")]
+        UpdateOrder_Result UpdateNewOrder(Data_ORDER_HEAD_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateCookAckOrder")]
+        UpdateOrder_Result UpdateCookAckOrder(Data_ORDER_HEAD_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateCancelOrder")]
+        UpdateOrder_Result UpdateCancelOrder(Data_ORDER_HEAD_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateCancelItemOrder")]
+        UpdateOrder_Result UpdateCancelItemOrder(Data_ORDER_DETAIL_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "EnquireOrderSummary")]
+        EnquireOrderSummary_Result EnquireOrderSummary(EnquireOrderSummary_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "EnquireOrderCooking")]
+        EnquireOrderCooking_Result EnquireOrderCooking(EnquireOrderCooking_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdatePayment")]
+        UpdateOrder_Result UpdatePayment(Data_ORDER_HEAD_Param param);
+
     }
+
 
 
 }

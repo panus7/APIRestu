@@ -41,6 +41,17 @@ namespace APIRestServiceRestaurant
             return (int)objRowValue;
         }
 
+        public static double getValueDouble(object objRowValue)
+        {
+            if (DBNull.Value == objRowValue)
+                return (double)0;
+
+            if (null == objRowValue)
+                return (double)0;
+
+            return (double)objRowValue;
+        }
+
         public static byte getValueByte(object objRowValue)
         {
             if (DBNull.Value == objRowValue)
