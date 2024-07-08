@@ -1491,6 +1491,38 @@ namespace APIRestService
             return new T();
         }
 
+        public static string ConvertClassToStringJson(object obj)
+        {
+            return ConvertClassToStringJson(obj, true, false);
+        }
+
+        public static string ConvertClassToStringJson(object obj, bool bEncodeSpecialChar, bool bBeautifyJSON)
+        {
+            string strJson = string.Empty;
+
+            try
+            { 
+                System.Web.Script.Serialization.JavaScriptSerializer xJavaScriptSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                xJavaScriptSerializer.MaxJsonLength = Int32.MaxValue;
+                strJson = xJavaScriptSerializer.Serialize(obj);
+                //if (bBeautifyJSON)
+                //{
+                //    strJson = FormatJson(strJson);
+                //}
+
+            }
+            catch (Exception e)
+            { }
+
+            return strJson;
+        }
+
+        //public static string FormatJson(string json)
+        //{
+        //    dynamic parsedJson = JsonConvert.DeserializeObject(json);
+        //    return Newtonsoft.Json.JsonConvert.SerializeObject(parsedJson, Newtonsoft.Json.Formatting.Indented);
+        //}
+
         public static DataTable JsonToDataTable<T>(IList<T> data)
         {
             PropertyDescriptorCollection props =

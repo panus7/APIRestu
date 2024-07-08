@@ -51,6 +51,7 @@ namespace APIRestService
         public static string ORDER_DETAIL_Field_OrderNo = "OrderNo";
         public static string ORDER_DETAIL_Field_Suffix = "Suffix";
         public static string ORDER_DETAIL_Field_MenuID = "MenuID";
+        public static string ORDER_DETAIL_Field_MenuName = "MenuName";
         public static string ORDER_DETAIL_Field_MenuMemo = "MenuMemo";
         public static string ORDER_DETAIL_Field_Qty = "Qty";
         public static string ORDER_DETAIL_Field_EntryDateTime = "EntryDateTime";
@@ -123,6 +124,7 @@ namespace APIRestService
     {
         public string OrderNo { get; set; }
         public string MenuID { get; set; }
+        public string MenuName { get; set; }
         public string MenuMemo { get; set; }
         public string Qty { get; set; }
         public string EntryDateTime { get; set; }
@@ -141,6 +143,7 @@ namespace APIRestService
         {
             OrderNo = string.Empty;
             MenuID = string.Empty;
+            MenuName = string.Empty;
             MenuMemo = string.Empty;
             EntryDateTime = string.Empty;
             CookAckDateTime = string.Empty;
@@ -220,7 +223,8 @@ namespace APIRestService
         public bool ResultStatus { get; set; }
         public List<Data_ORDER_DETAIL_Param> ListOfItemWaitAck { get; set; }
         public List<Data_ORDER_DETAIL_Param> ListOfItemAcked { get; set; }
-        public List<Data_ORDER_DETAIL_Param> ListOfItemFinish { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItemCookFinish { get; set; }
+        public List<Data_ORDER_DETAIL_Param> ListOfItemServed { get; set; }
 
         public EnquireOrderCooking_Result()
         {
@@ -228,7 +232,8 @@ namespace APIRestService
             ResultStatus = false;
             ListOfItemWaitAck = new List<Data_ORDER_DETAIL_Param>();
             ListOfItemAcked = new List<Data_ORDER_DETAIL_Param>();
-            ListOfItemFinish = new List<Data_ORDER_DETAIL_Param>();
+            ListOfItemCookFinish = new List<Data_ORDER_DETAIL_Param>();
+            ListOfItemServed = new List<Data_ORDER_DETAIL_Param>();
         }
     }
      
@@ -358,6 +363,8 @@ namespace APIRestService
         [DataMember]
         public string MenuType { get; set; }
         [DataMember]
+        public string MenuCategory { get; set; }        
+        [DataMember]
         public string MenuDescrption { get; set; }
         [DataMember]
         public string MenuImage { get; set; }
@@ -381,6 +388,7 @@ namespace APIRestService
             MenuCode = string.Empty;
             MenuNameShow = string.Empty;
             MenuNameShowThai = string.Empty;
+            MenuCategory = string.Empty;
             MenuType = string.Empty;
             MenuDescrption = string.Empty;
             MenuImage = string.Empty;

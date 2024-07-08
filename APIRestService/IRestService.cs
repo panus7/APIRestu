@@ -22,7 +22,23 @@ namespace APIRestService
         //BodyStyle = WebMessageBodyStyle.WrappedRequest,
         //UriTemplate = "GetData")]
         //string GetData();
-         
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+        RequestFormat = WebMessageFormat.Json,
+        ResponseFormat = WebMessageFormat.Json,
+        BodyStyle = WebMessageBodyStyle.WrappedRequest,
+        UriTemplate = "InportMenu")]
+        bool InportMenu();
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+        RequestFormat = WebMessageFormat.Json,
+        ResponseFormat = WebMessageFormat.Json,
+        BodyStyle = WebMessageBodyStyle.WrappedRequest,
+        UriTemplate = "ImportUser")]
+        bool ImportUser();
+
         [OperationContract]
         [WebInvoke(Method = "POST",
            RequestFormat = WebMessageFormat.Json,

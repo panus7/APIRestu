@@ -254,7 +254,7 @@ namespace APIRestService
             if (rest.ListOfData.Count == 1)
             {
                 var mUserInfo = JsonConvert.DeserializeObject<MasterData_UserInfo>(rest.ListOfData[0].MasterData);
-                if (mUserInfo.UserID == param.UserID && mUserInfo.UserPassword == param.UserPassword)
+                if (mUserInfo.UserPassword == param.UserPassword)
                 {
                     mUserInfo.UserPassword = "";
                     result.UserInfo = mUserInfo;
@@ -302,10 +302,16 @@ namespace APIRestService
             foreach (DataRow row in xDataTable.Rows)
             {
                 var menuData = JsonConvert.DeserializeObject<MasterData_MenuInfo>(DxData.getValueString(row["MasterInfo"]));
-                menuData.MenuCode = DxData.getValueString(row["MasterID"]);
-                menuData.MenuNameShow = DxData.getValueString(row["MasterNameEnglish"]);
-                menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
-                result.ListOfMasterData.Add(menuData);
+                if (!string.IsNullOrEmpty(param.MenuType))
+                {
+                    if (param.MenuType == menuData.MenuType)
+                    {
+                        menuData.MenuCode = DxData.getValueString(row["MasterID"]);
+                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameEnglish"]);
+                        menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
+                        result.ListOfMasterData.Add(menuData);
+                    }
+                }                
             }
 
             result.ResultStatus = true;
@@ -331,9 +337,185 @@ namespace APIRestService
 
             return dPrice;
         }
-         
+
 
         #region [ORDER]
+
+        public bool ImportUser()
+        {
+            //ListofUser.Add("ID|NAME|TYPE|PASS"); 
+            List<string> ListofUser = new List<string>();
+            ListofUser.Add("hop|Hop Admin|99|hpd2d");
+            ListofUser.Add("admin|Hope Admin|99|!@#");
+            ListofUser.Add("staff1|Staff-1|1|s001");
+            ListofUser.Add("staff2|Staff-2|1|s002");
+            ListofUser.Add("chef1|Chef-1|2|c001");
+            ListofUser.Add("chef2|Chef-2|2|c002");
+
+            foreach (var item in ListofUser)
+            {
+                string[] strMenuinfo = item.Split('|'); 
+                Update_MasterDataDetail param = new Update_MasterDataDetail();
+                param.MasterType = MasterKey_USERINFO;
+                param.MasterID = strMenuinfo[0];
+                param.MasterNameThai = strMenuinfo[1];
+                param.MasterNameEnglish = strMenuinfo[1];
+                MasterData_UserInfo xMenuInfo = new MasterData_UserInfo();
+                xMenuInfo.UserIDType = strMenuinfo[2];
+                xMenuInfo.UserPassword = strMenuinfo[3]; 
+                param.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
+                UpdateMasterData(param);
+            }
+
+            return true;
+        }
+
+        public bool InportMenu()
+        {
+            List<string> ListofMenuRaw = new List<string>();
+
+            /*
+            ListofMenuRaw.Add("< PRO > Beer สิงห์ (3ขวด)|AR01|2|เครื่องดื่ม|257|***โปร Beer สิงห์ 3 ขวด ***");
+            ListofMenuRaw.Add("< PRO > Beer ลีโอ (3ขวด)|AR02|2|เครื่องดื่ม|229|***โปร Beer ลีโอ 3 ขวด ***");
+            ListofMenuRaw.Add("< PRO > Beer ช้าง (3ขวด)|AR03|2|เครื่องดื่ม|219|***โปร Beer ช้าง 3 ขวด ***");
+
+            ListofMenuRaw.Add("เหล้า รีเจนซี(แบน)|WK01|2|เหล้า|450|");
+            ListofMenuRaw.Add("เหล้า หงส์ทอง (กลม)|WK02|2|เหล้า|350|");
+
+            ListofMenuRaw.Add("MAHANAKHON WHITE ALE(CAN)|CF01|2|คราฟ|150|Belgian style witbier Thai craft beer brewed in Taiwan 5% ABV - 0 IBU **SOFT**");
+            ListofMenuRaw.Add("Phitlok|CF02|2|คราฟ|220|IPA - Session 5% ABV - 0 IBU **SOFT**");
+            ListofMenuRaw.Add("Yodbeer Bearhug pale ale |CF03|2|คราฟ|210| 5.2% ABV - 0 IBU **SOFT**");
+            ListofMenuRaw.Add("Arom Weizen-IPA|CF04|2|คราฟ|210| 5.5% ABV - 30 IBU **SOFT**");
+
+            ListofMenuRaw.Add("Imagine DDH Hazy IPA|CM01|2|คราฟ|220|Wizard Beer IPA - New England/Hazy 5.5% ABV - 40 IBU **MEDIUM**");
+            ListofMenuRaw.Add("Wizard passion west coast IPA|CM02|2|คราฟ|220|Wizard Beer IPA - American 5.5% ABV - 40 IBU **MEDIUM**");
+            ListofMenuRaw.Add("Sawasdee IPA|CM03|2|คราฟ|220|PHEEBOK IPA 5.8% ABV - 0 IBU **MEDIUM**");
+            ListofMenuRaw.Add("ANAN (อนันต์)|CM04|2|คราฟ|240|DDH HAZY IPA IPA 6% ABV - 0 IBU **MEDIUM**");
+
+            ListofMenuRaw.Add("CALL ME PAPA HAZY|CX01|2|คราฟ|230|HAZY MILKSHAKE IPA 6.5% ABV - 0 IBU **HARD**");
+            ListofMenuRaw.Add("MAHANAKHON HAZY IPA|CX02|2|คราฟ|160|IPA NewEngland/Hazy 6.5% ABV - 0 IBU **HARD**");
+            ListofMenuRaw.Add("CALL ME PAPA DOUBLE HAZY|CX03|2|คราฟ|240|DOUBLE HAZY IPA 7.2% ABV - 70 IBU **HARD**");
+            ListofMenuRaw.Add("Away Gee IPA|CX04|2|คราฟ|260|Pheebok Beer IPA American 7.5% ABV - 0 IBU **HARD**");
+
+
+            */
+            /*
+            ListofMenuRaw.Add("ข้าวผัดมันเนื้อ|RC01|1|แนะนำ|200");
+            ListofMenuRaw.Add("ก้อยเสือคั่ว|RC02|1|แนะนำ|150");
+            
+            ListofMenuRaw.Add("ผัดมาม่าหมูสับ|RC03|1|แนะนำ|150");
+            ListofMenuRaw.Add("ผัดมาม่าขี้เมา|RC04|1|แนะนำ|150");
+            ListofMenuRaw.Add("เห่าดง|RC05|1|แนะนำ|120");
+            ListofMenuRaw.Add("สลัดผัก|RC06|1|แนะนำ|120");
+
+            ListofMenuRaw.Add("ต้มขมเนื้อ|SP01|1|ต้ม|100");
+            ListofMenuRaw.Add("ต้มแซ่บเนื้อ|SP02|1|ต้ม|100");
+            ListofMenuRaw.Add("ต้มแซ่บกระดูกอ่อน|SP03|1|ต้ม|100");
+            ListofMenuRaw.Add("ซุปเปอร์ตีนไก่|SP04|1|ต้ม|80");
+
+            ListofMenuRaw.Add("เนื้อย่าง|GL01|1|ย่าง|100");
+            ListofMenuRaw.Add("สันคอหมูย่าง|GL02|1|ย่าง|100");
+
+            ListofMenuRaw.Add("ส้มตำปูปลาร้า|YM01|1|ส้มตำ|50");
+            ListofMenuRaw.Add("ตำแตงไข่ต้ม|YM02|1|ส้มตำ|60");
+            ListofMenuRaw.Add("ตำถั่วหมูกรอบ|YM03|1|ส้มตำ|70");
+            //ListofMenuRaw.Add("ตำกุ้งสด|YM04|1|ส้มตำ|120");
+
+            ListofMenuRaw.Add("เอ็นแก้วตุ๋น|ST01|1|ล้วกจิ้ม|120");
+            ListofMenuRaw.Add("น่องลาย|ST02|1|ล้วกจิ้ม|120");
+            ListofMenuRaw.Add("สามชั้นนึ่ง|ST03|1|ล้วกจิ้ม|120");
+
+            ListofMenuRaw.Add("กุ้งแช่น้ำปลา|YM05|1|ยำ|150");
+            ListofMenuRaw.Add("ยำคอหมูย่าง|YM06|1|ยำ|100");
+            ListofMenuRaw.Add("ยำแหนม|YM07|1|ยำ|120");
+            ListofMenuRaw.Add("หมูมะนาว|YM08|1|ยำ|100");
+            ListofMenuRaw.Add("ปูอัดวาซาบิ|YM09|1|ยำ|70");
+            ListofMenuRaw.Add("ยำวุ้นเส้นหมูสับ|YM10|1|ยำ|120");
+            ListofMenuRaw.Add("ยำวุ้นเส้นกุ้ง|YM11|1|ยำ|150");
+            ListofMenuRaw.Add("ยำเม็ดมะม่วง|YM12|1|ยำ|120");
+            ListofMenuRaw.Add("ยำถั่วทอด|YM13|1|ยำ|80");
+            //ListofMenuRaw.Add("ยำไข่ดาว|YM14|1|ยำ|120");
+            ListofMenuRaw.Add("ยำไข่ต้มหมูสับ|YM15|1|ยำ|90");
+            ListofMenuRaw.Add("ยำเห็ดนางรมหลวง|YM16|1|ยำ|80");
+
+            ListofMenuRaw.Add("หมูสามชั้นทอดกรอบ|FR01|1|ทอด|100");
+            ListofMenuRaw.Add("สันคอหมูคั่วเค็ม|FR02|1|ทอด|120");
+            ListofMenuRaw.Add("สันคอหมููแดดเดียว|FR03|1|ทอด|100");
+            ListofMenuRaw.Add("เนื้อแดดเดียว|FR04|1|ทอด|120");
+            ListofMenuRaw.Add("เอ็นไก่ทอด|FR05|1|ทอด|80");
+            ListofMenuRaw.Add("ปีกไก่ทอดเกลือ|FR06|1|ทอด|90");
+
+            ListofMenuRaw.Add("เฟรนซ์ฟราย|OD01|1|อาหารว่าง|60");
+            ListofMenuRaw.Add("ข้าวเกรียบทอด|OD02|1|อาหารว่าง|70");
+            ListofMenuRaw.Add("เส้นนี้มีปู|OD03|1|อาหารว่าง|99");
+            ListofMenuRaw.Add("คางกุ้งทอดกรอบ|OD04|1|อาหารว่าง|99");
+            ListofMenuRaw.Add("ลูกชิ้นทอดรวม|OD05|1|อาหารว่าง|120");
+
+            ListofMenuRaw.Add("คะน้าหมูกรอบ|SF01|1|ผัด|120");
+            ListofMenuRaw.Add("หมูผัดน้ำมันหอย|SF02|1|ผัด|100");
+            ListofMenuRaw.Add("ไก่ผัดน้ำมันหอย|SF03|1|ผัด|100");
+            ListofMenuRaw.Add("กระเพราหมู|SF04|1|ผัด|100");
+            ListofMenuRaw.Add("กระเพราไก่|SF05|1|ผัด|100");
+            ListofMenuRaw.Add("กระเพราเนื้อตุ๋น|SF06|1|ผัด|120");
+            ListofMenuRaw.Add("กระเพราเนื้อแองกัส|SF07|1|ผัด|120");
+            ListofMenuRaw.Add("กะหล่ำปลีผัดน้ำปลา|SF08|1|ผัด|80");
+
+            ListofMenuRaw.Add("ข้าวไข่เจียวหมูสับ|FF01|1|จานเดียว|60"); 
+            ListofMenuRaw.Add("ข้าวผัดหมู|FF03|1|จานเดียว|60");
+            ListofMenuRaw.Add("ข้าวผัดไก่|FF04|1|จานเดียว|60");
+            ListofMenuRaw.Add("ข้าวผัดกระเพราหมูสับ|FF05|1|จานเดียว|60");
+            ListofMenuRaw.Add("ข้าวผัดกระเพราเนื้อแองกัส|FF06|1|จานเดียว|80");
+            ListofMenuRaw.Add("ข้าวผัดกระเพราเนื้อตุ๋น|FF07|1|จานเดียว|80");
+            ListofMenuRaw.Add("ข้าวคะน้าหมูกรอบ|FF08|1|จานเดียว|80");
+            ListofMenuRaw.Add("ข้าวเนื้อน้ำมันหอย|FF09|1|จานเดียว|80");
+            ListofMenuRaw.Add("ข้าวหมูสามชั้นทอดน้ำจิ้มแจ่ว|FF10|1|จานเดียว|80");
+            ListofMenuRaw.Add("เพิ่มไข่ดาว|FF11|1|จานเดียว|10");
+            ListofMenuRaw.Add("เพิ่มไข่เจียว|FF12|1|จานเดียว|10");
+            ListofMenuRaw.Add("เพิ่มไข่ต้ม|FF13|1|จานเดียว|10");
+            */
+
+            foreach (var item in ListofMenuRaw)
+            {
+                string[] strMenuinfo = item.Split('|');
+
+                Update_MasterDataDetail param = new Update_MasterDataDetail();
+                param.MasterType = "MENU";
+                param.MasterID = strMenuinfo[1];
+                param.MasterNameThai = strMenuinfo[0];
+                param.MasterNameEnglish = strMenuinfo[0];
+                MasterData_MenuInfo xMenuInfo = new MasterData_MenuInfo();                
+                xMenuInfo.MenuType = strMenuinfo[2]; //1อาหาร 2เครื่องดื่ม
+                xMenuInfo.MenuCategory = strMenuinfo[3];
+                xMenuInfo.MenuImage = param.MasterID.ToLower() + ".jpg";
+                xMenuInfo.Price = strMenuinfo[4];
+
+                if (strMenuinfo.Length == 6)
+                {
+                    xMenuInfo.MenuDescrption = strMenuinfo[5];
+                }
+
+                param.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
+                UpdateMasterData(param);
+            }
+
+            //Update_MasterDataDetail param = new Update_MasterDataDetail();
+            //param.MasterType = "MENU";
+            //param.MasterID = "SP01";
+            //param.MasterNameThai = "ต้มขมเนื้อ";
+            //param.MasterNameEnglish = "ต้มขมเนื้อ";
+            //MasterData_MenuInfo xMenuInfo = new MasterData_MenuInfo();
+            //xMenuInfo.MenuType = "1"; //1อาหาร 2เครื่องดื่ม
+            //xMenuInfo.MenuCategory = "ต้ม";
+            //xMenuInfo.MenuImage = param.MasterID.ToLower() + ".jpg";            
+            //xMenuInfo.Price = "";
+            //param.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
+            //UpdateMasterData(param);
+
+
+
+            return true;
+
+        }
 
         public UpdateOrder_Result UpdateNewOrder(Data_ORDER_HEAD_Param param)
         {
@@ -385,6 +567,7 @@ namespace APIRestService
                 xNewRow[TableName.ORDER_DETAIL_Field_OrderNo] = param.OrderNo;
                 xNewRow[TableName.ORDER_DETAIL_Field_Suffix] = iSuffix++;
                 xNewRow[TableName.ORDER_DETAIL_Field_MenuID] = itemData.MenuID;
+                xNewRow[TableName.ORDER_DETAIL_Field_MenuName] = itemData.MenuName;
                 xNewRow[TableName.ORDER_DETAIL_Field_MenuMemo] = itemData.MenuMemo;
                 xNewRow[TableName.ORDER_DETAIL_Field_EntryDateTime] = DateTime.Now;
                 xNewRow[TableName.ORDER_DETAIL_Field_Qty] = DxConvert.ConvertStringToDouble(itemData.Qty); 
@@ -918,11 +1101,13 @@ namespace APIRestService
                     itemData.CxlDateTime = DxData.getValueDateTimeToString(RowItem[TableName.ORDER_DETAIL_Field_CxlDateTime]);
                     itemData.OrderNo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_OrderNo]);
                     itemData.Suffix = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Suffix]);
+                    itemData.MenuName = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuName]);
                     itemData.MenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]);
                     itemData.MenuMemo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuMemo]);
                     itemData.CookAckUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CookAckUserID]);
                     itemData.CxlUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CxlUserID]);
                     itemData.ChargeAmt = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_ChargeAmt]);
+                    itemData.Qty = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Qty]);
 
                     if (string.IsNullOrEmpty(xDataHeader.CxlDateTime) && string.IsNullOrEmpty(itemData.CxlDateTime))
                     {
@@ -1005,15 +1190,19 @@ namespace APIRestService
                 itemData.Qty = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Qty]);
                 itemData.EntryDateTime = DxData.getValueDateTimeHHMMSSToString(RowItem[TableName.ORDER_DETAIL_Field_EntryDateTime]);
 
-                if (!string.IsNullOrEmpty(itemData.FinishCookUserID))
+                if (!string.IsNullOrEmpty(itemData.ServeCookDateTime))
                 {
-                    result.ListOfItemFinish.Add(itemData);
+                    result.ListOfItemServed.Add(itemData);
+                }
+                else if (!string.IsNullOrEmpty(itemData.FinishCookDateTime))
+                {
+                    result.ListOfItemCookFinish.Add(itemData);
                 }
                 else if (!string.IsNullOrEmpty(itemData.CookAckDateTime))
                 {
                     result.ListOfItemAcked.Add(itemData);
                 }
-                else if (string.IsNullOrEmpty(itemData.CookAckDateTime))
+                else
                 {
                     result.ListOfItemWaitAck.Add(itemData);
                 }
