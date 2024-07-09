@@ -28,8 +28,8 @@ namespace APIRestService
         RequestFormat = WebMessageFormat.Json,
         ResponseFormat = WebMessageFormat.Json,
         BodyStyle = WebMessageBodyStyle.WrappedRequest,
-        UriTemplate = "InportMenu")]
-        bool InportMenu();
+        UriTemplate = "ImportMenu")]
+        bool ImportMenu();
 
         [OperationContract]
         [WebInvoke(Method = "GET",
@@ -38,6 +38,14 @@ namespace APIRestService
         BodyStyle = WebMessageBodyStyle.WrappedRequest,
         UriTemplate = "ImportUser")]
         bool ImportUser();
+
+        [OperationContract]
+        [WebInvoke(Method = "GET",
+        RequestFormat = WebMessageFormat.Json,
+        ResponseFormat = WebMessageFormat.Json,
+        BodyStyle = WebMessageBodyStyle.WrappedRequest,
+        UriTemplate = "ImportTable")]
+        bool ImportTable();
 
         [OperationContract]
         [WebInvoke(Method = "POST",
@@ -78,6 +86,14 @@ namespace APIRestService
            BodyStyle = WebMessageBodyStyle.WrappedRequest,
            UriTemplate = "EnquireMenu")]
         EnquireMenu_Result EnquireMenu(EnquireMenu_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "EnquireTable")]
+        EnquireTable_Result EnquireTable(EnquireTable_Param param);
 
         [OperationContract]
         [WebInvoke(Method = "POST",

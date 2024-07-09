@@ -29,6 +29,7 @@ namespace APIRestService
         public static string MasterKey_USERINFO = "USERINFO";
         public static string MasterKey_MENU = "MENU";
         public static string MasterKey_STOCK = "STOCK";
+        public static string MasterKey_Table = "TABLE";
 
         public void DoWork()
         {
@@ -256,8 +257,10 @@ namespace APIRestService
                 var mUserInfo = JsonConvert.DeserializeObject<MasterData_UserInfo>(rest.ListOfData[0].MasterData);
                 if (mUserInfo.UserPassword == param.UserPassword)
                 {
-                    mUserInfo.UserPassword = "";
+                    mUserInfo.UserPassword = "";                    
                     result.UserInfo = mUserInfo;
+                    result.UserInfo.UserID = param.UserID;
+                    result.UserInfo.UserName = rest.ListOfData[0].MasterNameThai;
                     result.ResultStatus = true;
                 }
             }
@@ -319,6 +322,57 @@ namespace APIRestService
 
         }
 
+
+        public EnquireTable_Result EnquireTable(EnquireTable_Param param)
+        {
+            EnquireTable_Result result = new EnquireTable_Result();
+            result.ResultStatus = false;
+
+            if (string.IsNullOrEmpty(param.ViewByUserID))
+            {
+                result.ErrorMessage = "ViewByUserID empty!";
+                return result;
+            }
+
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+
+            DBCondition dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, MasterKey_Table);
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = "MASTERDATA";
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+
+            string strErrorMessage = string.Empty;
+            DataTable xDataTable = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ResultStatus = false;
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            result.ListOfMasterData = new List<MasterData_TableInfo>();
+            foreach (DataRow row in xDataTable.Rows)
+            {
+                var menuData = JsonConvert.DeserializeObject<MasterData_TableInfo>(DxData.getValueString(row["MasterInfo"]));
+                if (null != menuData)
+                {
+                    menuData.TableID = DxData.getValueString(row["MasterID"]);
+                    ///
+                    EnquireOrderSummary_Param paramSummary = new EnquireOrderSummary_Param();
+                    paramSummary.TableID = menuData.TableID;
+                    EnquireOrderSummary_Result xOrderSummryRes = EnquireOrderSummary(paramSummary);
+                    menuData.CurrentChargeAmt = xOrderSummryRes.TotalChargeAmt;
+                    result.ListOfMasterData.Add(menuData);
+                }
+            }
+
+            result.ResultStatus = true;
+            return result;
+        }
+
+
+
         public double getPrice(string strMenuID)
         {
             double dPrice = 0.0;
@@ -340,6 +394,27 @@ namespace APIRestService
 
 
         #region [ORDER]
+
+        
+        public bool ImportTable()
+        {
+            for (int i = 1; i <= 11; i++)
+            {
+                Update_MasterDataDetail param = new Update_MasterDataDetail();
+                param.MasterType = MasterKey_Table;
+                param.MasterID = i.ToString();
+                param.MasterNameThai = "โต๊ะ " + i.ToString();
+                param.MasterNameEnglish = "โต๊ะ " + i.ToString();
+                MasterData_TableInfo xMenuInfo = new MasterData_TableInfo();
+                xMenuInfo.TableID = i.ToString();
+                xMenuInfo.TableStatus = "0"; //0Empty , 1Active
+                param.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
+                UpdateMasterData(param);
+            }
+
+            return true;
+        }
+
 
         public bool ImportUser()
         {
@@ -370,7 +445,7 @@ namespace APIRestService
             return true;
         }
 
-        public bool InportMenu()
+        public bool ImportMenu()
         {
             List<string> ListofMenuRaw = new List<string>();
 

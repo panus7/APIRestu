@@ -339,6 +339,8 @@ namespace APIRestService
         [DataMember]
         public string UserID { get; set; }
         [DataMember]
+        public string UserName { get; set; }
+        [DataMember]
         public string UserPassword { get; set; }
         [DataMember]
         public string UserIDType { get; set; }
@@ -346,10 +348,30 @@ namespace APIRestService
         public MasterData_UserInfo()
         {
             UserID = string.Empty;
+            UserName = string.Empty;
             UserPassword = string.Empty;
             UserIDType = string.Empty;
         }
     }
+
+    [DataContract]
+    public class MasterData_TableInfo
+    {
+        [DataMember]
+        public string TableID { get; set; }
+        [DataMember]
+        public string TableStatus { get; set; }
+        [DataMember]
+        public string CurrentChargeAmt { get; set; }
+
+        public MasterData_TableInfo()
+        {
+            TableID = string.Empty;
+            TableStatus = string.Empty;
+            CurrentChargeAmt = string.Empty;
+        }
+    }
+
 
     [DataContract]
     public class MasterData_MenuInfo
@@ -421,6 +443,38 @@ namespace APIRestService
         }
     }
 
+    [DataContract]
+    public class EnquireTable_Param
+    {
+        [DataMember]
+        public string ContextKey { get; set; }
+        [DataMember]
+        public string ViewByUserID { get; set; }
+
+        public EnquireTable_Param()
+        {
+            ContextKey = string.Empty;
+            ViewByUserID = string.Empty;
+        }
+    }
+
+    [DataContract]
+    public class EnquireTable_Result
+    {
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ErrorMessage { get; set; }
+        [DataMember]
+        public List<MasterData_TableInfo> ListOfMasterData { get; set; }
+
+        public EnquireTable_Result()
+        {
+            ResultStatus = false;
+            ErrorMessage = string.Empty;
+            ListOfMasterData = new List<MasterData_TableInfo>();
+        }
+    }
 
     [DataContract]
     public class EnquireMenu_Param
