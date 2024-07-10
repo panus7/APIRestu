@@ -930,6 +930,105 @@ namespace APIRestService
 
         }
 
+        public UpdateOrder_Result UpdateAckCookItemOrder(Data_ORDER_DETAIL_Param param)
+        {
+            UpdateOrder_Result result = new UpdateOrder_Result();
+            result.ResultStatus = false;
+
+            if (string.IsNullOrEmpty(param.OrderNo))
+            {
+                result.ErrorMessage = "ระบุเลข Order";
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(param.Suffix))
+            {
+                result.ErrorMessage = "ระบุเลข Suffix";
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(param.MenuID))
+            {
+                result.ErrorMessage = "ระบุเลข MenuID";
+                return result;
+            }
+
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+
+            DBCondition dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_OrderNo, DBComparisonOperator.EqualEver, param.OrderNo);
+            string strErrorMessage = string.Empty;
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.ORDER_HEAD;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTable = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (xDataTable.Rows.Count == 0)
+            {
+                result.ErrorMessage = "ไม่พบรายการที่สั่ง!";
+                return result;
+            }
+            else
+            {
+                if (DateTime.MinValue != DxData.getValueDateTime(xDataTable.Rows[0][TableName.ORDER_HEAD_Field_CxlDateTime]))
+                {
+                    result.ErrorMessage = "รายการนี้ถูกยกเลิกแล้ว";
+                    return result;
+                }
+
+            }
+
+            dbCondition = DBExpression.Normal(TableName.ORDER_DETAIL_Field_OrderNo, DBComparisonOperator.EqualEver, param.OrderNo)
+                & DBExpression.Normal(TableName.ORDER_DETAIL_Field_Suffix, DBComparisonOperator.EqualEver, DxConvert.ConvertStringToInt(param.Suffix))
+                & DBExpression.Normal(TableName.ORDER_DETAIL_Field_MenuID, DBComparisonOperator.EqualEver, param.MenuID);
+
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.ORDER_DETAIL;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTableItem = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            if (xDataTableItem.Rows.Count == 0)
+            {
+                result.ErrorMessage = "ไม่พบรายการอาหาร";
+                return result;
+            }
+
+
+            foreach (DataRow RowHead in xDataTable.Rows)
+            {
+                if (DateTime.MinValue == DxData.getValueDateTime(RowHead[TableName.ORDER_HEAD_Field_CookAckDateTime]))
+                {
+                    RowHead[TableName.ORDER_HEAD_Field_CookAckDateTime] = DateTime.Now;
+                    RowHead[TableName.ORDER_HEAD_Field_CookAckUserID] = param.CookAckUserID;
+                }
+            }
+
+            foreach (DataRow RowItem in xDataTableItem.Rows)
+            {
+                RowItem[TableName.ORDER_DETAIL_Field_CookAckDateTime] = DateTime.Now;
+                RowItem[TableName.ORDER_DETAIL_Field_CookAckUserID] = param.CookAckUserID;
+                break;
+            }
+
+            DataSet ds = new DataSet();
+            ds.Tables.Add(xDataTableItem);
+            condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
+            return result;
+
+        }
+
+
         public UpdateOrder_Result UpdateFinishCookItemOrder(Data_ORDER_DETAIL_Param param)
         {
             UpdateOrder_Result result = new UpdateOrder_Result();
@@ -1248,7 +1347,7 @@ namespace APIRestService
                 return result;
             }
 
-            foreach (DataRow RowItem in xDataTableItem.Select(dbCondition.ToString(), TableName.ORDER_DETAIL_Field_Suffix))
+            foreach (DataRow RowItem in xDataTableItem.Select(dbCondition.ToString(), TableName.ORDER_DETAIL_Field_EntryDateTime))
             {
                 var itemData = new Data_ORDER_DETAIL_Param();
                 itemData.CookAckDateTime = DxData.getValueDateTimeToString(RowItem[TableName.ORDER_DETAIL_Field_CookAckDateTime]);
@@ -1258,12 +1357,23 @@ namespace APIRestService
                 itemData.OrderNo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_OrderNo]);
                 itemData.Suffix = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Suffix]);
                 itemData.MenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]);
+                itemData.MenuName = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuName]);
                 itemData.MenuMemo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuMemo]);
                 itemData.CookAckUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CookAckUserID]);
                 itemData.CxlUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CxlUserID]);
                 itemData.ChargeAmt = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_ChargeAmt]);
                 itemData.Qty = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Qty]);
                 itemData.EntryDateTime = DxData.getValueDateTimeHHMMSSToString(RowItem[TableName.ORDER_DETAIL_Field_EntryDateTime]);
+
+                dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_OrderNo, DBComparisonOperator.EqualEver, itemData.OrderNo);
+                xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+                xGetDataOptionParam.TableName = TableName.ORDER_HEAD;
+                xGetDataOptionParam.Condition = dbCondition.ToString();
+                DataTable xDataTableHead = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+                if (xDataTableHead.Rows.Count > 0)
+                {
+                    itemData.TableID = DxData.getValueString(xDataTableHead.Rows[0][TableName.ORDER_HEAD_Field_TableID]);
+                }
 
                 if (!string.IsNullOrEmpty(itemData.ServeCookDateTime))
                 {
@@ -1339,9 +1449,16 @@ namespace APIRestService
             xGetDataOptionParam.TableName = TableName.ORDER_DETAIL;
             xGetDataOptionParam.Condition = dbCondition.ToString();
             DataTable xDataTableItem = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+             
             ////
             DataTable xDataTableRec = condb.GetSchemaTable(TableName.RECEIVE_HEAD);
             DataTable xDataTableRecDtl = condb.GetSchemaTable(TableName.RECEIVE_DETAIL);
+
+
+            if (string.IsNullOrEmpty(param.PaidType))
+            {
+                param.PaidType = "CASH";
+            }
 
             DataRow xNewRow = xDataTableRec.NewRow();
             string strReceiveNo = param.TableID + dtReceiveDateTime.Ticks;
@@ -1350,6 +1467,8 @@ namespace APIRestService
             xNewRow[TableName.RECEIVE_HEAD_Field_RecevieNo] = strReceiveNo;
             xNewRow[TableName.RECEIVE_HEAD_Field_TableID] = param.TableID;
             xNewRow[TableName.RECEIVE_HEAD_Field_ReceiveUserID] = param.ReceiveUserID;
+            xNewRow[TableName.RECEIVE_HEAD_Field_Memo] = param.Memo;
+            xNewRow[TableName.RECEIVE_HEAD_Field_PaidType] = param.PaidType;
             xNewRow[TableName.RECEIVE_HEAD_Field_ChargeAmt] = DxConvert.ConvertStringToDouble(param.ChargeAmt);
             xNewRow[TableName.RECEIVE_HEAD_Field_DiscountAmt] = DxConvert.ConvertStringToDouble(param.DiscountAmt);
             xNewRow[TableName.RECEIVE_HEAD_Field_TotalAmt] = DxConvert.ConvertStringToDouble(param.TotalAmt);

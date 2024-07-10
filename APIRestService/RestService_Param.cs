@@ -75,7 +75,9 @@ namespace APIRestService
         public static string RECEIVE_HEAD_Field_ChargeAmt = "ChargeAmt";
         public static string RECEIVE_HEAD_Field_DiscountAmt = "DiscountAmt";
         public static string RECEIVE_HEAD_Field_TotalAmt = "TotalAmt";
-         
+        public static string RECEIVE_HEAD_Field_Memo = "Memo";
+        public static string RECEIVE_HEAD_Field_PaidType = "PaidType";
+
         public static string RECEIVE_DETAIL = "RECEIVE_DETAIL";
         public static string RECEIVE_DETAIL_Field_RecevieNo = "RecevieNo";
         public static string RECEIVE_DETAIL_Field_Suffix = "Suffix";
@@ -98,7 +100,9 @@ namespace APIRestService
         public string ReceiveUserID { get; set; }
         public string ChargeAmt { get; set; }
         public string TotalAmt { get; set; }
-        public string DiscountAmt { get; set; } 
+        public string DiscountAmt { get; set; }
+        public string PaidType { get; set; }
+        public string Memo { get; set; }
         public List<Data_ORDER_DETAIL_Param> ListOfItem { get; set; }
 
         public Data_ORDER_HEAD_Param()
@@ -115,7 +119,9 @@ namespace APIRestService
             ReceiveUserID = string.Empty;
             ChargeAmt = string.Empty;
             TotalAmt = string.Empty;
-            DiscountAmt = string.Empty; 
+            DiscountAmt = string.Empty;
+            PaidType = string.Empty;
+            Memo = string.Empty;
             ListOfItem = new List<Data_ORDER_DETAIL_Param>();
         } 
     }
@@ -128,6 +134,7 @@ namespace APIRestService
         public string MenuMemo { get; set; }
         public string Qty { get; set; }
         public string EntryDateTime { get; set; }
+        public string TableID { get; set; }
         public string CookAckDateTime { get; set; }
         public string CookAckUserID { get; set; }
         public string CxlDateTime { get; set; }
@@ -153,6 +160,7 @@ namespace APIRestService
             ChargeAmt = string.Empty;
             Suffix = string.Empty;
             Qty = string.Empty;
+            TableID = string.Empty;
             ///
             FinishCookDateTime = string.Empty;
             FinishCookUserID = string.Empty;

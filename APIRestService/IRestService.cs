@@ -116,6 +116,14 @@ namespace APIRestService
            RequestFormat = WebMessageFormat.Json,
            ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateAckCookItemOrder")]
+        UpdateOrder_Result UpdateAckCookItemOrder(Data_ORDER_DETAIL_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
            UriTemplate = "UpdateFinishCookItemOrder")]
         UpdateOrder_Result UpdateFinishCookItemOrder(Data_ORDER_DETAIL_Param param);
 
