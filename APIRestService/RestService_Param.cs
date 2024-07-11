@@ -214,6 +214,58 @@ namespace APIRestService
         }
     }
 
+    public class EnquireDashBoardSummary_Param
+    {
+        public string ViewDateTime { get; set; }
+        public string ViewType { get; set; } //Day / Month / Year
+        public string TopView { get; set; }
+
+        public EnquireDashBoardSummary_Param()
+        {
+            ViewDateTime = string.Empty;
+            ViewType = string.Empty;
+            TopView = string.Empty;
+        }
+    }
+
+    public class EnquireDashBoardSummary_Result
+    {
+        public string ErrorMessage { get; set; }
+        public string TotalOrderAmt { get; set; }
+        public string TotalChargeAmt { get; set; }
+        public string TotalChargeAmtByCash { get; set; }
+        public string TotalChargeAmtByCredit { get; set; }
+        public string TotalChargeAmtByQr { get; set; }
+
+        public List<EnquireDashBoardSummary_ResultTopList> ListTopFoodOrder { get; set; }
+        public List<EnquireDashBoardSummary_ResultTopList> ListTopBevOrder { get; set; }
+
+        public EnquireDashBoardSummary_Result()
+        {
+            ErrorMessage = string.Empty;
+            TotalOrderAmt = string.Empty;
+            TotalChargeAmt = string.Empty;
+            TotalChargeAmtByCash = string.Empty;
+            TotalChargeAmtByCredit = string.Empty;
+            TotalChargeAmtByQr = string.Empty;
+            ListTopFoodOrder = new List<EnquireDashBoardSummary_ResultTopList>();
+            ListTopBevOrder = new List<EnquireDashBoardSummary_ResultTopList>();
+        }
+    }
+
+    public class EnquireDashBoardSummary_ResultTopList
+    {
+        public string MenuID { get; set; }
+        public string MenuName { get; set; }
+        public string Qty { get; set; }
+
+        public EnquireDashBoardSummary_ResultTopList()
+        {
+            MenuID = string.Empty;
+            MenuName = string.Empty;
+            Qty = string.Empty;
+        }
+    }
 
     public class EnquireOrderCooking_Param
     {

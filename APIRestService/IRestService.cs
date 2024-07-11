@@ -175,6 +175,14 @@ namespace APIRestService
            UriTemplate = "UpdatePayment")]
         UpdateOrder_Result UpdatePayment(Data_ORDER_HEAD_Param param);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "EnquireDashBoardSummary")]
+        EnquireDashBoardSummary_Result EnquireDashBoardSummary(EnquireDashBoardSummary_Param param);
+
     }
 
 

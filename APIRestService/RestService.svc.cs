@@ -918,11 +918,45 @@ namespace APIRestService
             DataSet ds = new DataSet();
             ds.Tables.Add(xDataTableItem);
             condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
-
             if (!string.IsNullOrEmpty(strErrorMessage))
             {
                 result.ErrorMessage = strErrorMessage;
                 return result;
+            }
+
+            //CheckForStampHeader
+            dbCondition = DBExpression.Normal(TableName.ORDER_DETAIL_Field_OrderNo, DBComparisonOperator.EqualEver, param.OrderNo)
+                & DBExpression.From_CheckValueSet(TableName.ORDER_DETAIL_Field_CxlDateTime, SqlDbType.DateTime, CheckValueType.Not_Set);
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.ORDER_DETAIL;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+
+            DataTable xDataTableItemCheck = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (xDataTableItemCheck.Rows.Count == 0)
+            { 
+                //Case All cxl item stamp Header
+                dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_OrderNo, DBComparisonOperator.EqualEver, param.OrderNo)
+                    & DBExpression.From_CheckValueSet(TableName.ORDER_HEAD_Field_CxlDateTime, SqlDbType.DateTime, CheckValueType.Not_Set);
+                ///
+                strErrorMessage = string.Empty;
+                xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+                xGetDataOptionParam.TableName = TableName.ORDER_HEAD;
+                xGetDataOptionParam.Condition = dbCondition.ToString();
+                DataTable xDataTableHeader = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+                if (xDataTableHeader.Rows.Count > 0)
+                {
+                    xDataTableHeader.Rows[0][TableName.ORDER_HEAD_Field_CxlDateTime] = DateTime.Now;
+                    xDataTableHeader.Rows[0][TableName.ORDER_HEAD_Field_CxlUserID] = param.CxlUserID;
+                }
+
+                ds = new DataSet();
+                ds.Tables.Add(xDataTableHeader);
+                condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
+                if (!string.IsNullOrEmpty(strErrorMessage))
+                {
+                    result.ErrorMessage = strErrorMessage;
+                    return result;
+                }
             }
 
             result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
@@ -1514,6 +1548,155 @@ namespace APIRestService
             result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
             return result;
         }
+
+        public EnquireDashBoardSummary_Result EnquireDashBoardSummary(EnquireDashBoardSummary_Param param)
+        {
+            EnquireDashBoardSummary_Result result = new EnquireDashBoardSummary_Result();
+
+            DateTime dtViewDateTime = DateTime.Today;
+            ///
+            if (!string.IsNullOrEmpty(param.ViewDateTime))
+            {
+                dtViewDateTime = DxConvert.ConvertStringDateParamToDateTime(param.ViewDateTime);
+            }
+
+            DateTime dtStart = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day , 12, 0,0);
+            DateTime dtEnd = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day + 1 , 4, 0, 0);
+
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+            DBCondition dbCondition = DBExpression.BETWEEN(TableName.RECEIVE_HEAD_Field_ReceiveDateTime, dtStart, dtEnd)
+                & DBExpression.From_CheckValueSet(TableName.RECEIVE_HEAD_Field_CxlDateTime, SqlDbType.DateTime, CheckValueType.Not_Set);
+
+            string strErrorMessage = string.Empty;
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.RECEIVE_HEAD;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTableRecv = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+         
+
+            double dChargeAmtCash = 0.0;
+            double dChargeAmtCredit = 0.0;
+            double dChargeAmtQr = 0.0;
+
+            DateTime dtReceiveDateTime = DateTime.Now;
+            foreach (DataRow RowOrderHead in xDataTableRecv.Rows)
+            {
+                //CASH / CREDIT / QR
+                if (DxData.getValueString(RowOrderHead[TableName.RECEIVE_HEAD_Field_PaidType]).ToUpper() == "QR"){
+                    dChargeAmtQr += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
+                }
+                else if (DxData.getValueString(RowOrderHead[TableName.RECEIVE_HEAD_Field_PaidType]).ToUpper() == "CREDIT")
+                {
+                    dChargeAmtCredit += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
+                }
+                else 
+                {
+                    dChargeAmtCash += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
+                }
+            }
+
+            result.TotalChargeAmt =  (dChargeAmtCash + dChargeAmtCredit + dChargeAmtQr).ToString();
+            result.TotalChargeAmtByCash = dChargeAmtCash.ToString();
+            result.TotalChargeAmtByCredit = dChargeAmtCredit.ToString();
+            result.TotalChargeAmtByQr = dChargeAmtQr.ToString();
+
+
+            condb = new ConnectDB(ServiceUtil.getConnectionString());
+            dbCondition = DBExpression.BETWEEN(TableName.ORDER_DETAIL_Field_EntryDateTime, dtStart, dtEnd)
+                & DBExpression.From_CheckValueSet(TableName.ORDER_DETAIL_Field_CxlDateTime, SqlDbType.DateTime, CheckValueType.Not_Set);
+
+            strErrorMessage = string.Empty;
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.ORDER_DETAIL;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTableOrderDtl = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+
+            double dOrderChargeAmt = 0.0;
+            foreach (DataRow RowOrderDtl in xDataTableOrderDtl.Rows)
+            {
+                dOrderChargeAmt += DxData.getValueDouble(RowOrderDtl[TableName.ORDER_DETAIL_Field_ChargeAmt]);
+            }
+            result.TotalOrderAmt = dOrderChargeAmt.ToString();
+
+            DataTable xDatatableFoodCnt = new DataTable();
+            xDatatableFoodCnt.Columns.Add("MenuID");
+            xDatatableFoodCnt.Columns.Add("MenuName");
+            xDatatableFoodCnt.Columns.Add("Qty",typeof(System.Int16));
+
+            DataTable xDatatableBevCnt = new DataTable();
+            xDatatableBevCnt.Columns.Add("MenuID");
+            xDatatableBevCnt.Columns.Add("MenuName");
+            xDatatableBevCnt.Columns.Add("Qty", typeof(System.Int16));
+
+            List<string> ListOfFood = DxCollection.GetDistinctCodeList(xDataTableOrderDtl, TableName.ORDER_DETAIL_Field_MenuID);
+
+            foreach (var strMenuID in ListOfFood)
+            {
+                dbCondition = DBExpression.Normal(TableName.ORDER_DETAIL_Field_MenuID, DBComparisonOperator.EqualEver, strMenuID);
+                int iQty = 0;
+                string strMenuName = "";
+                foreach (DataRow RowOrderDtl in xDataTableOrderDtl.Select(dbCondition.ToString()))
+                {
+                    if (string.IsNullOrEmpty(strMenuName))
+                    {
+                        strMenuName = DxData.getValueString(RowOrderDtl[TableName.ORDER_DETAIL_Field_MenuName]);
+                    }
+
+                    iQty += DxData.getValueInt(RowOrderDtl[TableName.ORDER_DETAIL_Field_Qty]);
+                }
+
+                //A,B,C  Bev
+                if (strMenuID.StartsWith("A") | strMenuID.StartsWith("B") | strMenuID.StartsWith("C"))
+                {
+                    DataRow xNewRow = xDatatableBevCnt.NewRow();
+                    xNewRow["MenuID"] = strMenuID;
+                    xNewRow["MenuName"] = strMenuName;
+                    xNewRow["Qty"] = iQty;
+                    xDatatableBevCnt.Rows.Add(xNewRow);
+                }
+                else
+                {
+                    DataRow xNewRow = xDatatableFoodCnt.NewRow();
+                    xNewRow["MenuID"] = strMenuID;
+                    xNewRow["MenuName"] = strMenuName;
+                    xNewRow["Qty"] = iQty;
+                    xDatatableFoodCnt.Rows.Add(xNewRow);
+                }
+            }
+
+            int iCount = 1;
+            foreach (DataRow row in xDatatableBevCnt.Select("", "Qty DESC"))
+            {
+                EnquireDashBoardSummary_ResultTopList xNewItem = new EnquireDashBoardSummary_ResultTopList();
+                xNewItem.MenuID = DxData.getValueString(row["MenuID"]);
+                xNewItem.MenuName = DxData.getValueString(row["MenuName"]);
+                xNewItem.Qty = DxData.getValueString(row["Qty"]);
+                result.ListTopBevOrder.Add(xNewItem);
+                if (iCount == 10)
+                {
+                    break;
+                }
+                iCount++;
+            }
+
+            iCount = 1;
+            foreach (DataRow row in xDatatableFoodCnt.Select("", "Qty DESC"))
+            {
+                EnquireDashBoardSummary_ResultTopList xNewItem = new EnquireDashBoardSummary_ResultTopList();
+                xNewItem.MenuID = DxData.getValueString(row["MenuID"]);
+                xNewItem.MenuName = DxData.getValueString(row["MenuName"]);
+                xNewItem.Qty = DxData.getValueString(row["Qty"]);
+                result.ListTopFoodOrder.Add(xNewItem);
+                if (iCount == 10)
+                {
+                    break;
+                }
+                iCount++;
+            }
+
+            return result;
+        }
+
 
         #endregion [ORDER]
 
