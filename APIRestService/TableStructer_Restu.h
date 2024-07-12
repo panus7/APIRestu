@@ -48,4 +48,17 @@ FIELD=Suffix,			TYPE=int
 FIELD=OrderNo,			TYPE=varchar, SIZE=30
 FIELD=ChargeAmt,		TYPE=float
 PRIMARYKEY=RecevieNo,Suffix
+
+
+TABLE=STOCK_LOT
+FIELD=UpdateDateTime,	TYPE=datetime
+FIELD=StockMasterID,	TYPE=varchar, SIZE=30
+FIELD=StockMasterName,	TYPE=nvarchar, SIZE=150
+FIELD=ShopName,			TYPE=nvarchar, SIZE=150
+FIELD=Qty,				TYPE=float
+FIELD=Unit,				TYPE=nvarchar, SIZE=30
+FIELD=Amt,				TYPE=float
+FIELD=ExpireDateTime,	TYPE=datetime
+FIELD=UpdateUserID,		TYPE=varchar, SIZE=20
+PRIMARYKEY=UpdateDateTime, StockMasterID
  

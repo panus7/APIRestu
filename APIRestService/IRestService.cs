@@ -183,6 +183,13 @@ namespace APIRestService
            UriTemplate = "EnquireDashBoardSummary")]
         EnquireDashBoardSummary_Result EnquireDashBoardSummary(EnquireDashBoardSummary_Param param);
 
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateStockLot")]
+        Uodate_StockLot_Result UpdateStockLot(Data_Stock_Lot_Param param);
     }
 
 

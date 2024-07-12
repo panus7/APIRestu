@@ -274,11 +274,11 @@ namespace APIRestService
             EnquireMenu_Result result = new EnquireMenu_Result();
             result.ResultStatus = false;
 
-            if (string.IsNullOrEmpty(param.MenuType) && string.IsNullOrEmpty(param.MenuName))
-            {
-                result.ErrorMessage = "MenuType , MenuName empty!";
-                return result;
-            }
+            //if (string.IsNullOrEmpty(param.MenuType) && string.IsNullOrEmpty(param.MenuName))
+            //{
+            //    result.ErrorMessage = "MenuType , MenuName empty!";
+            //    return result;
+            //}
 
             ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
 
@@ -312,6 +312,8 @@ namespace APIRestService
                         menuData.MenuCode = DxData.getValueString(row["MasterID"]);
                         menuData.MenuNameShow = DxData.getValueString(row["MasterNameEnglish"]);
                         menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
+                        menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
+                        menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
                         result.ListOfMasterData.Add(menuData);
                     }
                 }                
@@ -1545,6 +1547,53 @@ namespace APIRestService
                 return result;
             }
 
+            //CutStock
+            foreach (DataRow RowItem in xDataTableItem.Select())
+            {
+                string strCxlDateTime = DxData.getValueDateTimeToString(RowItem[TableName.ORDER_DETAIL_Field_CxlDateTime]);
+                if (string.IsNullOrEmpty(strCxlDateTime))
+                {
+                    string strMenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]);
+
+                    if (strMenuID.StartsWith("A") | strMenuID.StartsWith("B") | strMenuID.StartsWith("C") | strMenuID.StartsWith("W"))
+                    {
+                        double dUseQty = DxConvert.ConvertStringToDouble(DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Qty]));
+                        ///
+                        dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, "MENU")
+                            & DBExpression.Normal("MasterID", DBComparisonOperator.EqualEver, strMenuID);
+                        ////
+                        xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+                        xGetDataOptionParam.TableName = "MASTERDATA";
+                        xGetDataOptionParam.Condition = dbCondition.ToString();
+                        DataTable xDataTableMaster = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+                        if (xDataTableMaster.Rows.Count > 0)
+                        {
+                            if (!string.IsNullOrEmpty(DxData.getValueString(xDataTableMaster.Rows[0]["MapStockMasterID"])))
+                            {
+                                string strMapStockMasterID = DxData.getValueString(xDataTableMaster.Rows[0]["MapStockMasterID"]);
+                                double dQtyStockForUse = (double)DxData.getValueDouble(xDataTableMaster.Rows[0]["QtyStockForUse"]) * dUseQty;
+
+                                dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, "MENU")
+                                & DBExpression.Normal("MasterID", DBComparisonOperator.EqualEver, strMapStockMasterID);
+                                ////
+                                xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+                                xGetDataOptionParam.TableName = "MASTERDATA";
+                                xGetDataOptionParam.Condition = dbCondition.ToString();
+                                xDataTableMaster = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+                                xDataTableMaster.Rows[0]["QtyStockBal"] = DxData.getValueDouble(xDataTableMaster.Rows[0]["QtyStockBal"]) - dQtyStockForUse;
+                                condb.UpdateDataTable(xDataTableMaster, out strErrorMessage);
+                            }
+                            else
+                            {
+                                xDataTableMaster.Rows[0]["QtyStockBal"] = DxData.getValueDouble(xDataTableMaster.Rows[0]["QtyStockBal"]) - (double)dUseQty;
+                                condb.UpdateDataTable(xDataTableMaster, out strErrorMessage);
+                            }
+                        }
+                    }
+                }
+            }
+
+
             result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
             return result;
         }
@@ -1597,6 +1646,9 @@ namespace APIRestService
             {
                 dtViewDateTime = DxConvert.ConvertStringDateParamToDateTime(param.ViewDateTime);
             }
+
+
+
 
             DateTime dtStart = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day, 12, 0, 0);
             DateTime dtEnd = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day + 1, 4, 0, 0);
@@ -1691,8 +1743,8 @@ namespace APIRestService
                     iQty += DxData.getValueInt(RowOrderDtl[TableName.ORDER_DETAIL_Field_Qty]);
                 }
 
-                //A,B,C  Bev
-                if (strMenuID.StartsWith("A") | strMenuID.StartsWith("B") | strMenuID.StartsWith("C"))
+                //A,B,C,W  Bev
+                if (strMenuID.StartsWith("A") | strMenuID.StartsWith("B") | strMenuID.StartsWith("C") | strMenuID.StartsWith("W"))
                 {
                     DataRow xNewRow = xDatatableBevCnt.NewRow();
                     xNewRow["MenuID"] = strMenuID;
@@ -1740,8 +1792,128 @@ namespace APIRestService
                 iCount++;
             }
 
-            //yeary data summary
+            //StockBal
+            dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, "MENU")
+            & DBExpression.From_CheckValueSet("QtyStockBal", SqlDbType.Float , CheckValueType.Set)
+            & DBExpression.Normal("QtyStockBal", DBComparisonOperator.LessThanOrEqualTo , (double)12);
 
+            strErrorMessage = string.Empty;
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = "MASTERDATA";
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTableMaster = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+
+            foreach (DataRow rowStock in xDataTableMaster.Select("", " QtyStockBal DESC "))
+            {
+                EnquireDashBoardSummary_ResultTopList xStock = new EnquireDashBoardSummary_ResultTopList();
+                xStock.MenuID = DxData.getValueString(rowStock["MasterID"]);
+                xStock.MenuName = DxData.getValueString(rowStock["MasternameEnglish"]);
+                xStock.Qty = DxData.getValueString(rowStock["QtyStockBal"]);
+                xStock.Unit = DxData.getValueString(rowStock["SmallUnit"]);
+                result.ListStockLowBal.Add(xStock);
+            }
+
+            return result;
+        }
+
+        public Uodate_StockLot_Result UpdateStockLot(Data_Stock_Lot_Param param)
+        {
+            Uodate_StockLot_Result result = new Uodate_StockLot_Result();
+            result.ResultStatus = false;
+
+            if (string.IsNullOrEmpty(param.StockMasterID))
+            {
+                result.ErrorMessage = "ระบุเลข StockMasterID";
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(param.Qty))
+            {
+                result.ErrorMessage = "ระบุ Qty";
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(param.UpdateDateTime))
+            {
+                param.UpdateDateTime = DxData.getValueDateTimeHHMMSSToString(DateTime.Now);
+            }
+
+            DateTime dtUpdateTime = DxConvert.ConvertStringDateParamToDateTime(param.UpdateDateTime);
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+            DBCondition dbCondition = DBExpression.Normal(TableName.STOCK_LOT_Field_UpdateDateTime, DBComparisonOperator.EqualEver, dtUpdateTime) 
+                & DBExpression.Normal(TableName.STOCK_LOT_Field_StockMasterID, DBComparisonOperator.EqualEver, param.StockMasterID);
+
+            string strErrorMessage = string.Empty;
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.STOCK_LOT;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTable = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (xDataTable.Rows.Count == 0)
+            {
+                DataRow xNewRow = xDataTable.NewRow();
+                xNewRow[TableName.STOCK_LOT_Field_UpdateDateTime] = dtUpdateTime;
+                xNewRow[TableName.STOCK_LOT_Field_UpdateUserID] = param.UpdateUserID;
+                xNewRow[TableName.STOCK_LOT_Field_StockMasterID] = param.StockMasterID;
+                xNewRow[TableName.STOCK_LOT_Field_StockMasterName] = param.StockMasterName;
+                xDataTable.Rows.Add(xNewRow);
+            }
+
+            DataRow rowLot = xDataTable.Rows[0];
+            rowLot[TableName.STOCK_LOT_Field_StockMasterID] = param.StockMasterID;
+            rowLot[TableName.STOCK_LOT_Field_ExpireDateTime] = DxConvert.ConvertStringDateParamToDateTime(param.ExpireDateTime);                        
+            rowLot[TableName.STOCK_LOT_Field_ShopName] = param.ShopName;
+            rowLot[TableName.STOCK_LOT_Field_Unit] = param.Unit;
+            rowLot[TableName.STOCK_LOT_Field_Qty] = DxConvert.ConvertStringToDouble(param.Qty);
+            rowLot[TableName.STOCK_LOT_Field_Amt] = DxConvert.ConvertStringToDouble(param.Amt);
+
+
+            DataSet ds = new DataSet();
+            ds.Tables.Add(xDataTable);
+             
+            dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, "MENU")
+              & DBExpression.Normal("MasterID", DBComparisonOperator.EqualEver, param.StockMasterID);
+
+            strErrorMessage = string.Empty;
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = "MASTERDATA";
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTableMaster = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+
+            if (xDataTableMaster.Rows.Count > 0)
+            {
+                double dQtyStockBal = DxData.getValueDouble(xDataTableMaster.Rows[0]["QtyStockBal"]);
+
+                //CAN ขวด 1
+                //BOTTLE ขวด 1
+                //CRATE ลัง 12
+                //TRAY ถาด 24                
+                if (param.Unit.ToUpper().Equals("CRATE"))
+                {
+                    dQtyStockBal = dQtyStockBal + (DxConvert.ConvertStringToDouble(param.Qty) * 12);
+                }
+                else if (param.Unit.ToUpper().Equals("TRAY"))
+                {
+                    dQtyStockBal = dQtyStockBal + (DxConvert.ConvertStringToDouble(param.Qty) * 24);
+                }
+                else
+                {
+                    dQtyStockBal = dQtyStockBal + DxConvert.ConvertStringToDouble(param.Qty);
+                }
+
+                xDataTableMaster.Rows[0]["QtyStockBal"] = dQtyStockBal;
+
+                ds.Tables.Add(xDataTableMaster);
+            }
+
+            condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
             return result;
         }
 
@@ -1897,34 +2069,7 @@ namespace APIRestService
 
             return xDataTableReturn;
         }
-
-        public string getUserIDName(string strUserID)
-        {
-            return strUserID;
-
-            DataTable dt = getMasterDataUserID(strUserID);
-            if (dt.Rows.Count > 0)
-            {
-                string nameEng = DxData.getValueString(dt.Rows[0]["UserNameEN"]);
-                if (string.IsNullOrEmpty(nameEng))
-                {
-                    nameEng = DxData.getValueString(dt.Rows[0]["UserNameTH"]);
-                }
-                if (string.IsNullOrEmpty(nameEng))
-                {
-                    nameEng = strUserID;
-                }
-
-                if (string.IsNullOrEmpty(nameEng))
-                {
-                    return strUserID;
-                }
-
-                return nameEng;
-            }
-
-            return strUserID;
-        }
+ 
 
 
     }

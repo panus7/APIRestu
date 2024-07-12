@@ -84,6 +84,17 @@ namespace APIRestService
         public static string RECEIVE_DETAIL_Field_OrderNo = "OrderNo";
         public static string RECEIVE_DETAIL_Field_ChargeAmt = "ChargeAmt";
 
+        public static string STOCK_LOT = "STOCK_LOT";
+        public static string STOCK_LOT_Field_UpdateDateTime = "UpdateDateTime";
+        public static string STOCK_LOT_Field_StockMasterID = "StockMasterID";
+        public static string STOCK_LOT_Field_StockMasterName = "StockMasterName";
+        public static string STOCK_LOT_Field_ShopName = "ShopName";
+        public static string STOCK_LOT_Field_Qty = "Qty";
+        public static string STOCK_LOT_Field_Unit = "Unit";
+        public static string STOCK_LOT_Field_Amt = "Amt";
+        public static string STOCK_LOT_Field_ExpireDateTime = "ExpireDateTime";
+        public static string STOCK_LOT_Field_UpdateUserID = "UpdateUserID";
+
     }
 
     public class Data_ORDER_HEAD_Param
@@ -239,6 +250,7 @@ namespace APIRestService
         public string TotalChargeAmtByCredit { get; set; }
         public string TotalChargeAmtByQr { get; set; }
 
+        public List<EnquireDashBoardSummary_ResultTopList> ListStockLowBal { get; set; }
         public List<EnquireDashBoardSummary_ResultTopList> ListTopFoodOrder { get; set; }
         public List<EnquireDashBoardSummary_ResultTopList> ListTopBevOrder { get; set; }
         public List<EnquireDashBoardSummary_ResultMonth> ListMonthly { get; set; }
@@ -255,6 +267,7 @@ namespace APIRestService
             ListTopFoodOrder = new List<EnquireDashBoardSummary_ResultTopList>();
             ListTopBevOrder = new List<EnquireDashBoardSummary_ResultTopList>();
             ListMonthly = new List<EnquireDashBoardSummary_ResultMonth>();
+            ListStockLowBal = new List<EnquireDashBoardSummary_ResultTopList>();
         }
     }
 
@@ -279,12 +292,14 @@ namespace APIRestService
         public string MenuID { get; set; }
         public string MenuName { get; set; }
         public string Qty { get; set; }
+        public string Unit { get; set; }
 
         public EnquireDashBoardSummary_ResultTopList()
         {
             MenuID = string.Empty;
             MenuName = string.Empty;
             Qty = string.Empty;
+            Unit = string.Empty;
         }
     }
 
@@ -464,6 +479,10 @@ namespace APIRestService
         [DataMember]
         public string MenuNameShowThai { get; set; }
         [DataMember]
+        public string QtyStockBal { get; set; }
+        [DataMember]
+        public string SmallUnit { get; set; }        
+        [DataMember]
         public string MenuType { get; set; }
         [DataMember]
         public string MenuCategory { get; set; }        
@@ -497,6 +516,7 @@ namespace APIRestService
             MenuImage = string.Empty;
             Price = string.Empty;
             Cost = string.Empty;
+            SmallUnit = string.Empty;
             StockIngredient1 = string.Empty;
             StockIngredient2 = string.Empty;
             StockIngredient3 = string.Empty;
@@ -597,6 +617,56 @@ namespace APIRestService
         }
     }
 
+    [DataContract]
+    public class Data_Stock_Lot_Param
+    {
+        [DataMember]
+        public string UpdateDateTime { get; set; }
+        [DataMember]
+        public string StockMasterID { get; set; }
+        [DataMember]
+        public string StockMasterName { get; set; }
+        [DataMember]
+        public string ShopName { get; set; }
+        [DataMember]
+        public string Qty { get; set; }
+        [DataMember]
+        public string Unit { get; set; }
+        [DataMember]
+        public string Amt { get; set; }
+        [DataMember]
+        public string ExpireDateTime { get; set; }
+        [DataMember]
+        public string UpdateUserID { get; set; }
+
+        public Data_Stock_Lot_Param()
+        {
+            UpdateDateTime = string.Empty;
+            StockMasterID = string.Empty;
+            StockMasterName = string.Empty;
+            ShopName = string.Empty;
+            Qty = string.Empty;
+            Unit = string.Empty;
+            Amt = string.Empty;
+            ExpireDateTime = string.Empty;
+            UpdateUserID = string.Empty;
+        } 
+    }
+
+    [DataContract]
+    public class Uodate_StockLot_Result
+    {
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ErrorMessage { get; set; }
+
+        public Uodate_StockLot_Result()
+        {
+            ResultStatus = false;
+            ErrorMessage = string.Empty;
+        }
+    }
 
 
     [DataContract]
