@@ -219,12 +219,14 @@ namespace APIRestService
         public string ViewDateTime { get; set; }
         public string ViewType { get; set; } //Day / Month / Year
         public string TopView { get; set; }
+        public bool MonthView { get; set; }
 
         public EnquireDashBoardSummary_Param()
         {
             ViewDateTime = string.Empty;
             ViewType = string.Empty;
             TopView = string.Empty;
+            MonthView = false;
         }
     }
 
@@ -239,6 +241,8 @@ namespace APIRestService
 
         public List<EnquireDashBoardSummary_ResultTopList> ListTopFoodOrder { get; set; }
         public List<EnquireDashBoardSummary_ResultTopList> ListTopBevOrder { get; set; }
+        public List<EnquireDashBoardSummary_ResultMonth> ListMonthly { get; set; }
+        
 
         public EnquireDashBoardSummary_Result()
         {
@@ -248,6 +252,23 @@ namespace APIRestService
             TotalChargeAmtByCash = string.Empty;
             TotalChargeAmtByCredit = string.Empty;
             TotalChargeAmtByQr = string.Empty;
+            ListTopFoodOrder = new List<EnquireDashBoardSummary_ResultTopList>();
+            ListTopBevOrder = new List<EnquireDashBoardSummary_ResultTopList>();
+            ListMonthly = new List<EnquireDashBoardSummary_ResultMonth>();
+        }
+    }
+
+    public class EnquireDashBoardSummary_ResultMonth
+    {
+        public string Month { get; set; }
+        public string TotalAmt { get; set; }
+        public List<EnquireDashBoardSummary_ResultTopList> ListTopFoodOrder { get; set; }
+        public List<EnquireDashBoardSummary_ResultTopList> ListTopBevOrder { get; set; }
+
+        public EnquireDashBoardSummary_ResultMonth()
+        {
+            Month = string.Empty;
+            TotalAmt = string.Empty;
             ListTopFoodOrder = new List<EnquireDashBoardSummary_ResultTopList>();
             ListTopBevOrder = new List<EnquireDashBoardSummary_ResultTopList>();
         }

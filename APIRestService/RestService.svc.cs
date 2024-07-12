@@ -1554,14 +1554,59 @@ namespace APIRestService
             EnquireDashBoardSummary_Result result = new EnquireDashBoardSummary_Result();
 
             DateTime dtViewDateTime = DateTime.Today;
+            if (string.IsNullOrEmpty(param.ViewDateTime))
+            {
+                param.ViewDateTime = DxData.getValueDateTimeHHMMSSToString(dtViewDateTime);
+            }
+
+            dtViewDateTime = DxConvert.ConvertStringDateParamToDateTime(param.ViewDateTime);
+
+            result = getDataDashBoardSummaryMonth(param);
+
+            //yeary data summary
+            for (int i = 1; i <= 12; i++)
+            {
+                EnquireDashBoardSummary_Param paramMonth = new EnquireDashBoardSummary_Param();
+                paramMonth.MonthView = true;
+                paramMonth.ViewDateTime = DxData.getValueDateTimeHHMMSSToString(new DateTime(dtViewDateTime.Year, i, 1));
+                var resMonth = getDataDashBoardSummaryMonth(paramMonth);
+
+                EnquireDashBoardSummary_ResultMonth xMonthData = new EnquireDashBoardSummary_ResultMonth();
+                xMonthData.Month = new DateTime(dtViewDateTime.Year, i, 1).ToString("MMM");
+                xMonthData.TotalAmt = resMonth.TotalChargeAmt;
+
+                if (resMonth.ListTopBevOrder.Count > 0)
+                    xMonthData.ListTopBevOrder.AddRange(resMonth.ListTopBevOrder);
+
+                if (resMonth.ListTopFoodOrder.Count > 0)
+                    xMonthData.ListTopFoodOrder.AddRange(resMonth.ListTopFoodOrder);
+
+                result.ListMonthly.Add(xMonthData);
+            }
+            
+            return result;
+        }
+
+        private EnquireDashBoardSummary_Result getDataDashBoardSummaryMonth(EnquireDashBoardSummary_Param param)
+        {
+            EnquireDashBoardSummary_Result result = new EnquireDashBoardSummary_Result();
+
+            DateTime dtViewDateTime = DateTime.Today;
             ///
             if (!string.IsNullOrEmpty(param.ViewDateTime))
             {
                 dtViewDateTime = DxConvert.ConvertStringDateParamToDateTime(param.ViewDateTime);
             }
 
-            DateTime dtStart = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day , 12, 0,0);
-            DateTime dtEnd = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day + 1 , 4, 0, 0);
+            DateTime dtStart = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day, 12, 0, 0);
+            DateTime dtEnd = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, dtViewDateTime.Day + 1, 4, 0, 0);
+            if (param.MonthView)
+            {
+                dtStart = new DateTime(dtViewDateTime.Year, dtViewDateTime.Month, 1, 12, 0, 0);
+                int maxDay = DateTime.DaysInMonth(dtViewDateTime.Year, dtViewDateTime.Month);
+                var dateTimeNext = dtStart.AddDays(maxDay);
+                dtEnd = new DateTime(dateTimeNext.Year, dateTimeNext.Month, dateTimeNext.Day, 4, 0, 0);
+            }
 
             ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
             DBCondition dbCondition = DBExpression.BETWEEN(TableName.RECEIVE_HEAD_Field_ReceiveDateTime, dtStart, dtEnd)
@@ -1572,7 +1617,7 @@ namespace APIRestService
             xGetDataOptionParam.TableName = TableName.RECEIVE_HEAD;
             xGetDataOptionParam.Condition = dbCondition.ToString();
             DataTable xDataTableRecv = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
-         
+
 
             double dChargeAmtCash = 0.0;
             double dChargeAmtCredit = 0.0;
@@ -1582,20 +1627,21 @@ namespace APIRestService
             foreach (DataRow RowOrderHead in xDataTableRecv.Rows)
             {
                 //CASH / CREDIT / QR
-                if (DxData.getValueString(RowOrderHead[TableName.RECEIVE_HEAD_Field_PaidType]).ToUpper() == "QR"){
+                if (DxData.getValueString(RowOrderHead[TableName.RECEIVE_HEAD_Field_PaidType]).ToUpper() == "QR")
+                {
                     dChargeAmtQr += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
                 }
                 else if (DxData.getValueString(RowOrderHead[TableName.RECEIVE_HEAD_Field_PaidType]).ToUpper() == "CREDIT")
                 {
                     dChargeAmtCredit += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
                 }
-                else 
+                else
                 {
                     dChargeAmtCash += DxData.getValueDouble(RowOrderHead[TableName.RECEIVE_HEAD_Field_ChargeAmt]);
                 }
             }
 
-            result.TotalChargeAmt =  (dChargeAmtCash + dChargeAmtCredit + dChargeAmtQr).ToString();
+            result.TotalChargeAmt = (dChargeAmtCash + dChargeAmtCredit + dChargeAmtQr).ToString();
             result.TotalChargeAmtByCash = dChargeAmtCash.ToString();
             result.TotalChargeAmtByCredit = dChargeAmtCredit.ToString();
             result.TotalChargeAmtByQr = dChargeAmtQr.ToString();
@@ -1621,7 +1667,7 @@ namespace APIRestService
             DataTable xDatatableFoodCnt = new DataTable();
             xDatatableFoodCnt.Columns.Add("MenuID");
             xDatatableFoodCnt.Columns.Add("MenuName");
-            xDatatableFoodCnt.Columns.Add("Qty",typeof(System.Int16));
+            xDatatableFoodCnt.Columns.Add("Qty", typeof(System.Int16));
 
             DataTable xDatatableBevCnt = new DataTable();
             xDatatableBevCnt.Columns.Add("MenuID");
@@ -1693,6 +1739,8 @@ namespace APIRestService
                 }
                 iCount++;
             }
+
+            //yeary data summary
 
             return result;
         }
