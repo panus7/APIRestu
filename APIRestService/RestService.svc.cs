@@ -1805,12 +1805,16 @@ namespace APIRestService
 
             foreach (DataRow rowStock in xDataTableMaster.Select("", " QtyStockBal DESC "))
             {
-                EnquireDashBoardSummary_ResultTopList xStock = new EnquireDashBoardSummary_ResultTopList();
-                xStock.MenuID = DxData.getValueString(rowStock["MasterID"]);
-                xStock.MenuName = DxData.getValueString(rowStock["MasternameEnglish"]);
-                xStock.Qty = DxData.getValueString(rowStock["QtyStockBal"]);
-                xStock.Unit = DxData.getValueString(rowStock["SmallUnit"]);
-                result.ListStockLowBal.Add(xStock);
+                string strMenuID = DxData.getValueString(rowStock["MasterID"]);
+                if (strMenuID.StartsWith("A") | strMenuID.StartsWith("B") | strMenuID.StartsWith("C") | strMenuID.StartsWith("W"))
+                {
+                    EnquireDashBoardSummary_ResultTopList xStock = new EnquireDashBoardSummary_ResultTopList();
+                    xStock.MenuID = DxData.getValueString(rowStock["MasterID"]);
+                    xStock.MenuName = DxData.getValueString(rowStock["MasternameEnglish"]);
+                    xStock.Qty = DxData.getValueString(rowStock["QtyStockBal"]);
+                    xStock.Unit = DxData.getValueString(rowStock["SmallUnit"]);
+                    result.ListStockLowBal.Add(xStock);
+                } 
             }
 
             return result;
