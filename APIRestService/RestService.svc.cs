@@ -1882,6 +1882,10 @@ namespace APIRestService
             if (xDataTableMaster.Rows.Count > 0)
             {
                 double dQtyStockBal = DxData.getValueDouble(xDataTableMaster.Rows[0]["QtyStockBal"]);
+                if (dQtyStockBal < 0)
+                {
+                    dQtyStockBal = 0;
+                }
 
                 //CAN ขวด 1
                 //BOTTLE ขวด 1
