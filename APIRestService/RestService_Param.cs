@@ -142,6 +142,7 @@ namespace APIRestService
         public string OrderNo { get; set; }
         public string MenuID { get; set; }
         public string MenuName { get; set; }
+        public string MenuEngName { get; set; }
         public string MenuMemo { get; set; }
         public string Qty { get; set; }
         public string EntryDateTime { get; set; }
@@ -162,6 +163,7 @@ namespace APIRestService
             OrderNo = string.Empty;
             MenuID = string.Empty;
             MenuName = string.Empty;
+            MenuEngName = string.Empty;
             MenuMemo = string.Empty;
             EntryDateTime = string.Empty;
             CookAckDateTime = string.Empty;

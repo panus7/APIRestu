@@ -309,8 +309,9 @@ namespace APIRestService
                 {
                     if (param.MenuType == menuData.MenuType)
                     {
+                        //DxData.getValueString(row["MasterNameEnglish"]);
                         menuData.MenuCode = DxData.getValueString(row["MasterID"]);
-                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameEnglish"]);
+                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]); 
                         menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
                         menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
                         menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
@@ -669,9 +670,127 @@ namespace APIRestService
                 return result;
             }
 
+
+            PushMessage_Param xPushMessage_Param = new PushMessage_Param();
+            xPushMessage_Param.SenderName = "โต๊ะ " + param.TableID + "\r\n";
+            xPushMessage_Param.Title = "สั่งเครื่องดื่ม\r\n";
+            xPushMessage_Param.TextMsg = "โต๊ะ " + param.TableID + "\r\n" + "รายการที่สั่ง \r\n";
+
+            bool bSend = false;
+            foreach (var item in param.ListOfItem)
+            {
+                if (item.MenuID.StartsWith("A") || item.MenuID.StartsWith("B") | item.MenuID.StartsWith("C") | item.MenuID.StartsWith("W"))
+                {
+                    bSend = true;
+                    xPushMessage_Param.TextMsg += " -> " + item.MenuName + " จำนวน " + item.Qty + "\r\n"; 
+                }
+            }
+
+            DateTime dtNow = DateTime.Now;
+            xPushMessage_Param.TextMsg += dtNow.ToString("dd/MM/yyyy HH:mm");
+             
+            if (bSend)
+            {
+                var resLine = SendLineNotify(xPushMessage_Param);
+            }
+
+
             result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
             return result;
         }
+
+
+        public static PushMessage_Result SendLineNotify(PushMessage_Param param)
+        {
+            string strClientTokenID = WebConfigurationManager.AppSettings["LINE_NOTI"];
+            if (string.IsNullOrEmpty(strClientTokenID))
+                return null;
+
+            param.ListTokenIDClient.Add(strClientTokenID);
+            ///
+            return PushLineNotify(param);
+        }
+
+        public static PushMessage_Result PushLineNotify(PushMessage_Param param)
+        {
+            //Debug ต้องเอาออก
+            //ForSever 
+
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                               | SecurityProtocolType.Tls11
+                               | SecurityProtocolType.Tls12
+                               | SecurityProtocolType.Ssl3;
+
+
+            PushMessage_Result result = new PushMessage_Result();
+            try
+            {
+                foreach (string token in param.ListTokenIDClient)
+                {
+                    if (!string.IsNullOrEmpty(param.TextMsg) && string.IsNullOrEmpty(param.ImageBase64))
+                    {
+
+                        var request = (HttpWebRequest)WebRequest.Create("https://notify-api.line.me/api/notify");
+                        var postData = string.Format("message={0}", Uri.EscapeDataString(param.TextMsg));
+
+                        var data = Encoding.UTF8.GetBytes(postData);
+                        request.Method = "POST";
+                        request.ContentType = "application/x-www-form-urlencoded";
+                        request.ContentLength = data.Length;
+                        request.Headers.Add("Authorization", "Bearer " + token);
+                        using (var stream = request.GetRequestStream()) stream.Write(data, 0, data.Length);
+                        var response = (HttpWebResponse)request.GetResponse();
+                        var responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                        result.Message += responseString + "\r\n";
+                        result.ResultStatus = true;
+
+                    }
+                    else if (!string.IsNullOrEmpty(param.ImageBase64))
+                    {
+                        var request = (HttpWebRequest)WebRequest.Create("https://notify-api.line.me/api/notify");
+
+                        var postData = string.Format("message={0}", param.TextMsg);
+
+                        var responseString = "";
+                        try
+                        {
+                            var data = Encoding.UTF8.GetBytes(postData);
+                            request.Method = "POST";
+                            request.ContentType = "application/x-www-form-urlencoded";
+                            request.ContentLength = data.Length;
+                            request.Headers.Add("Authorization", "Bearer " + token);
+                            using (var stream = request.GetRequestStream()) stream.Write(data, 0, data.Length);
+                            var response = (HttpWebResponse)request.GetResponse();
+                            responseString = new StreamReader(response.GetResponseStream()).ReadToEnd();
+
+                        }
+                        catch (Exception e)
+                        { }
+
+                        result.Message += responseString + "\r\n" + postData;
+                        result.ResultStatus = true;
+
+                    }
+
+                }
+
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message.ToString() + "|>" + param.TextMsg + "<|";
+
+                if (param.ListTokenIDClient.Count > 0)
+                {
+                    result.Message += param.ListTokenIDClient[0]; //FullStackException(ex);
+                }
+            }
+
+            return result;
+        }
+
+
 
         public UpdateOrder_Result UpdateCookAckOrder(Data_ORDER_HEAD_Param param)
         {
@@ -1286,6 +1405,15 @@ namespace APIRestService
                 return result;
             }
 
+            List<string> ListOfMenuID = DxCollection.GetDistinctCodeList(xDataTableItem, TableName.ORDER_DETAIL_Field_MenuID);
+            dbCondition = DBExpression.IN("MasterID", ListOfMenuID);
+            xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = "MASTERDATA";
+            xGetDataOptionParam.Condition = dbCondition.ToString(); 
+            DataTable xDataTableManuname = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            DataColumn[] primaryKeyColumns = new DataColumn[] { xDataTableManuname.Columns["MasterID"] };
+            xDataTableManuname.PrimaryKey = primaryKeyColumns;
+
             double dChargeAmt = 0.0;
             foreach (DataRow xRow in xDataTable.Rows)
             {
@@ -1302,7 +1430,7 @@ namespace APIRestService
                 xDataHeader.ReceiveUserID = DxData.getValueString(xRow[TableName.ORDER_HEAD_Field_ReceiveUserID]);
 
                 dbCondition = DBExpression.Normal(TableName.ORDER_DETAIL_Field_OrderNo, DBComparisonOperator.EqualEver, xDataHeader.OrderNo);
-
+                 
                 double OrderChargeAmt = 0;
                 foreach (DataRow RowItem in xDataTableItem.Select(dbCondition.ToString(), TableName.ORDER_DETAIL_Field_Suffix))
                 {
@@ -1312,13 +1440,19 @@ namespace APIRestService
                     itemData.OrderNo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_OrderNo]);
                     itemData.Suffix = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Suffix]);
                     itemData.MenuName = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuName]);
-                    itemData.MenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]);
+                    itemData.MenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]); 
                     itemData.MenuMemo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuMemo]);
                     itemData.CookAckUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CookAckUserID]);
                     itemData.CxlUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CxlUserID]);
                     itemData.ChargeAmt = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_ChargeAmt]);
                     itemData.Qty = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Qty]);
 
+                    if (!string.IsNullOrEmpty(itemData.MenuID))
+                    {
+                        DataRow xRowinfo = xDataTableManuname.Rows.Find(DxData.getValueString(itemData.MenuID));
+                        itemData.MenuEngName = itemData.MenuID + ":" + DxData.getValueString(xRowinfo["MasterNameEnglish"]) + " x " + itemData.Qty;
+                    }
+                         
                     if (string.IsNullOrEmpty(xDataHeader.CxlDateTime) && string.IsNullOrEmpty(itemData.CxlDateTime))
                     {
                         OrderChargeAmt += DxData.getValueDouble(RowItem[TableName.ORDER_DETAIL_Field_ChargeAmt]);
@@ -1393,6 +1527,17 @@ namespace APIRestService
                 itemData.OrderNo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_OrderNo]);
                 itemData.Suffix = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_Suffix]);
                 itemData.MenuID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuID]);
+
+                //A,B,C,W
+                if (itemData.MenuID.StartsWith("A") ||
+                    itemData.MenuID.StartsWith("B") ||
+                    itemData.MenuID.StartsWith("C") ||
+                    itemData.MenuID.StartsWith("W"))
+                {
+                    continue;
+                }
+
+
                 itemData.MenuName = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuName]);
                 itemData.MenuMemo = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_MenuMemo]);
                 itemData.CookAckUserID = DxData.getValueString(RowItem[TableName.ORDER_DETAIL_Field_CookAckUserID]);
