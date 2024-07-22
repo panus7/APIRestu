@@ -38,6 +38,7 @@ namespace APIRestService
         public static string ORDER_HEAD = "ORDER_HEAD";
         public static string ORDER_HEAD_Field_OrderNo = "OrderNo";
         public static string ORDER_HEAD_Field_TableID = "TableID";
+        public static string ORDER_HEAD_Field_FromTableID = "FromTableID";
         public static string ORDER_HEAD_Field_OrderDateTime = "OrderDateTime";
         public static string ORDER_HEAD_Field_OrderByUserID = "OrderByUserID";
         public static string ORDER_HEAD_Field_CxlDateTime = "CxlDateTime";
@@ -195,6 +196,33 @@ namespace APIRestService
             ResultStatus = false;
         }
     }
+
+    public class UpdateMoveTable_Param
+    {
+        public string TableID { get; set; }
+        public string ToTableID { get; set; }
+        public string UserUD { get; set; }
+
+        public UpdateMoveTable_Param()
+        {
+            TableID = string.Empty;
+            ToTableID = string.Empty;
+            UserUD = string.Empty;
+        }
+    }
+
+    public class UpdateMoveTable_Result
+    {
+        public string ErrorMessage { get; set; }
+        public bool ResultStatus { get; set; }
+
+        public UpdateMoveTable_Result()
+        {
+            ErrorMessage = string.Empty;
+            ResultStatus = false;
+        }
+    }
+
 
 
     public class EnquireOrderSummary_Param

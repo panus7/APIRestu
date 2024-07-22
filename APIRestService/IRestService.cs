@@ -75,6 +75,14 @@ namespace APIRestService
 
         [OperationContract]
         [WebInvoke(Method = "POST",
+          RequestFormat = WebMessageFormat.Json,
+          ResponseFormat = WebMessageFormat.Json,
+          BodyStyle = WebMessageBodyStyle.WrappedRequest,
+          UriTemplate = "UpdateMoveTable")]
+        UpdateMoveTable_Result UpdateMoveTable(UpdateMoveTable_Param param);
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
            RequestFormat = WebMessageFormat.Json,
            ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.WrappedRequest,

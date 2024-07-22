@@ -324,8 +324,7 @@ namespace APIRestService
             return result;
 
         }
-
-
+         
         public EnquireTable_Result EnquireTable(EnquireTable_Param param)
         {
             EnquireTable_Result result = new EnquireTable_Result();
@@ -594,6 +593,66 @@ namespace APIRestService
             return true;
 
         }
+
+        
+        public UpdateMoveTable_Result UpdateMoveTable(UpdateMoveTable_Param param)
+        {
+            UpdateMoveTable_Result result = new UpdateMoveTable_Result();
+            result.ResultStatus = false;
+
+            if (string.IsNullOrEmpty(param.TableID))
+            {
+                result.ErrorMessage = "ระบุเลขโต๊ะปัจจุบัน";
+                return result;
+            }
+
+            if (string.IsNullOrEmpty(param.ToTableID))
+            {
+                result.ErrorMessage = "ระบุเลขโต๊ะที่ย้าย";
+                return result;
+            }
+             
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+            DBCondition dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_TableID, DBComparisonOperator.EqualEver, param.TableID)
+                & DBExpression.From_CheckValueSet(TableName.ORDER_HEAD_Field_ReceiveDateTime, SqlDbType.DateTime , CheckValueType.Not_Set);
+
+            string strErrorMessage = string.Empty;
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = TableName.ORDER_HEAD;
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTable = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (xDataTable.Rows.Count == 0)
+            {
+                result.ErrorMessage = "ไม่พบรายการที่สั่ง!";
+                return result;
+            }
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+
+            foreach (DataRow xDataRow in xDataTable.Rows)
+            {
+                xDataRow[TableName.ORDER_HEAD_Field_TableID] = param.ToTableID;
+                xDataRow[TableName.ORDER_HEAD_Field_FromTableID] = param.TableID;
+            }
+
+            DataSet ds = new DataSet();
+            ds.Tables.Add(xDataTable); 
+            condb.Transaction_UpdateDataSet(ds, out strErrorMessage);
+
+            if (!string.IsNullOrEmpty(strErrorMessage))
+            {
+                result.ErrorMessage = strErrorMessage;
+                return result;
+            }
+              
+
+            result.ResultStatus = string.IsNullOrEmpty(strErrorMessage);
+            return result;
+        }
+
 
         public UpdateOrder_Result UpdateNewOrder(Data_ORDER_HEAD_Param param)
         {
