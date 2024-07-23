@@ -451,6 +451,14 @@ namespace APIRestService
         {
             List<string> ListofMenuRaw = new List<string>();
 
+            //ListofMenuRaw.Add("Coke|BD06|2|เครื่องดื่ม|25|โค้ก");
+            ListofMenuRaw.Add("Soda |BD07|2|เครื่องดื่ม|20|โซดา");
+            ListofMenuRaw.Add("Water Drink (Big)|BD09|2|เครื่องดื่ม|40|น้ำเปล่า(ขวดใหญ่)");
+            ListofMenuRaw.Add("Water Drink (Small)|BD10|2|เครื่องดื่ม|30|น้ำเปล่า(ขวดเล็ก)");
+            ListofMenuRaw.Add("Ice (Big)|BD11|2|เครื่องดื่ม|50|น้ำแข็ง (ใหญ่)");
+            ListofMenuRaw.Add("Ice (Small)|BD12|2|เครื่องดื่ม|30|น้ำแข็ง (เล็ก)");
+            
+
             /*
             ListofMenuRaw.Add("< PRO > Beer สิงห์ (3ขวด)|AR01|2|เครื่องดื่ม|257|***โปร Beer สิงห์ 3 ขวด ***");
             ListofMenuRaw.Add("< PRO > Beer ลีโอ (3ขวด)|AR02|2|เครื่องดื่ม|229|***โปร Beer ลีโอ 3 ขวด ***");
@@ -611,7 +619,13 @@ namespace APIRestService
                 result.ErrorMessage = "ระบุเลขโต๊ะที่ย้าย";
                 return result;
             }
-             
+
+            if (param.TableID == param.ToTableID)
+            {
+                result.ErrorMessage = "หมายเลขโต๊ะปลายทาง = โต๊ะเดิม";
+                return result;
+            }
+
             ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
             DBCondition dbCondition = DBExpression.Normal(TableName.ORDER_HEAD_Field_TableID, DBComparisonOperator.EqualEver, param.TableID)
                 & DBExpression.From_CheckValueSet(TableName.ORDER_HEAD_Field_ReceiveDateTime, SqlDbType.DateTime , CheckValueType.Not_Set);
