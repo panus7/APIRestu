@@ -102,6 +102,15 @@ namespace APIRestService
            RequestFormat = WebMessageFormat.Json,
            ResponseFormat = WebMessageFormat.Json,
            BodyStyle = WebMessageBodyStyle.WrappedRequest,
+           UriTemplate = "UpdateMenu")]
+        EnquireMenu_Result UpdateMenu(MasterData_MenuInfo param);
+
+
+        [OperationContract]
+        [WebInvoke(Method = "POST",
+           RequestFormat = WebMessageFormat.Json,
+           ResponseFormat = WebMessageFormat.Json,
+           BodyStyle = WebMessageBodyStyle.WrappedRequest,
            UriTemplate = "EnquireTable")]
         EnquireTable_Result EnquireTable(EnquireTable_Param param);
 

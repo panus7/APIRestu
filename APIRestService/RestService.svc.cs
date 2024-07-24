@@ -159,6 +159,10 @@ namespace APIRestService
                 {
                     row["OffDateTime"] = DxDate.DateTimeNow_HHMMSS();
                 }
+                else
+                {
+                    row["OffDateTime"] = DBNull.Value;
+                }
             }
 
             condb.UpdateDataTable(xDataTable, out strErrorMessage);
@@ -321,19 +325,21 @@ namespace APIRestService
                         menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
                         menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
                         menuData.OffDateTime = DxData.getValueDateTimeToString(row["OffDateTime"]);
+                        menuData.OffCode = (DateTime.MinValue != DxData.getValueDateTime(row["OffDateTime"]));
                         result.ListOfMasterData.Add(menuData);
                     }
                 }
                 else if (!string.IsNullOrEmpty(param.MasterID))
-                { 
-                        menuData.MenuCode = DxData.getValueString(row["MasterID"]);
-                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]);
-                        menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
-                        menuData.MenuNameShowEng = DxData.getValueString(row["MasterNameEnglish"]);
-                        menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
-                        menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
-                        menuData.OffDateTime = DxData.getValueDateTimeToString(row["OffDateTime"]);
-                        result.ListOfMasterData.Add(menuData); 
+                {
+                    menuData.MenuCode = DxData.getValueString(row["MasterID"]);
+                    menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]);
+                    menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
+                    menuData.MenuNameShowEng = DxData.getValueString(row["MasterNameEnglish"]);
+                    menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
+                    menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
+                    menuData.OffDateTime = DxData.getValueDateTimeToString(row["OffDateTime"]);
+                    menuData.OffCode = (DateTime.MinValue != DxData.getValueDateTime(row["OffDateTime"]));
+                    result.ListOfMasterData.Add(menuData);
                 }
             }
 
@@ -514,7 +520,7 @@ namespace APIRestService
             //<option> อาหารว่าง </ option >
             //เครื่องดื่ม
              
-            if (param.MenuCategory.Equals("เครื่องดื่ม") || param.MenuCategory.Equals("คราฟเบียร์") || param.MenuCategory.Equals("เหล้า"))
+            if (param.MenuCategory.Equals("เครื่องดื่ม") || param.MenuCategory.Equals("เครื่องดื่มโปร") || param.MenuCategory.Equals("คราฟเบียร์") || param.MenuCategory.Equals("เหล้า"))
             {
                 strMenuType = "2";
             }
@@ -524,6 +530,7 @@ namespace APIRestService
             xMenuInfo.MenuCategory = param.MenuCategory;
             xMenuInfo.MenuImage = param.MenuImage;
             xMenuInfo.Price = param.Price;
+            xMenuInfo.Cost = param.Cost;
             xMenuInfo.MenuDescrption = param.MenuDescrption; 
 
             paramUpdate.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
