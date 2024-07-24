@@ -429,6 +429,8 @@ namespace APIRestService
         public string ImageData { get; set; }
         [DataMember]
         public string ItemImageData { get; set; } //ProfileUser
+        [DataMember]
+        public bool OffCode { get; set; }
     }
 
     [DataContract]
@@ -509,6 +511,8 @@ namespace APIRestService
         [DataMember]
         public string MenuNameShowThai { get; set; }
         [DataMember]
+        public string MenuNameShowEng { get; set; }
+        [DataMember]
         public string QtyStockBal { get; set; }
         [DataMember]
         public string SmallUnit { get; set; }        
@@ -534,12 +538,17 @@ namespace APIRestService
         public string StockIngredient4 { get; set; }
         [DataMember]
         public string StockIngredient5 { get; set; }
+        [DataMember]
+        public string OffDateTime { get; set; }
+        [DataMember]
+        public bool OffCode { get; set; }
 
         public MasterData_MenuInfo()
         {
             MenuCode = string.Empty;
             MenuNameShow = string.Empty;
             MenuNameShowThai = string.Empty;
+            MenuNameShowEng = string.Empty;
             MenuCategory = string.Empty;
             MenuType = string.Empty;
             MenuDescrption = string.Empty;
@@ -552,6 +561,8 @@ namespace APIRestService
             StockIngredient3 = string.Empty;
             StockIngredient4 = string.Empty;
             StockIngredient5 = string.Empty;
+            OffCode = false;
+            OffDateTime = string.Empty;
         }
     }
 
@@ -644,6 +655,21 @@ namespace APIRestService
             ResultStatus = false;
             ErrorMessage = string.Empty;
             ListOfMasterData = new List<MasterData_MenuInfo>();
+        }
+    }
+
+    [DataContract]
+    public class UpdateMenu_Result
+    {
+        [DataMember]
+        public bool ResultStatus { get; set; }
+        [DataMember]
+        public string ErrorMessage { get; set; }
+
+        public UpdateMenu_Result()
+        {
+            ResultStatus = false;
+            ErrorMessage = string.Empty;
         }
     }
 

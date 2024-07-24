@@ -155,6 +155,10 @@ namespace APIRestService
                 {
                     row["ImageData"] = DxImage.ConvertBase64ImageToByteArray(param.ImageData, true);
                 }
+                if (param.OffCode)
+                {
+                    row["OffDateTime"] = DxDate.DateTimeNow_HHMMSS();
+                }
             }
 
             condb.UpdateDataTable(xDataTable, out strErrorMessage);
@@ -282,7 +286,7 @@ namespace APIRestService
 
             ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
 
-            DBCondition dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, MasterKey_MENU)
+            DBCondition dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.Equal, MasterKey_MENU)
                 & DBExpression.Normal("MasterID", DBComparisonOperator.Equal, param.MasterID)
                 & DBExpression.LIKE("MasterNameEnglish", param.MenuName)
                 & DBExpression.LIKE("MasterNameThai", param.MenuName);
@@ -311,13 +315,26 @@ namespace APIRestService
                     {
                         //DxData.getValueString(row["MasterNameEnglish"]);
                         menuData.MenuCode = DxData.getValueString(row["MasterID"]);
-                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]); 
+                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]);
                         menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
+                        menuData.MenuNameShowEng = DxData.getValueString(row["MasterNameEnglish"]);
                         menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
                         menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
+                        menuData.OffDateTime = DxData.getValueDateTimeToString(row["OffDateTime"]);
                         result.ListOfMasterData.Add(menuData);
                     }
-                }                
+                }
+                else if (!string.IsNullOrEmpty(param.MasterID))
+                { 
+                        menuData.MenuCode = DxData.getValueString(row["MasterID"]);
+                        menuData.MenuNameShow = DxData.getValueString(row["MasterNameThai"]);
+                        menuData.MenuNameShowThai = DxData.getValueString(row["MasterNameThai"]);
+                        menuData.MenuNameShowEng = DxData.getValueString(row["MasterNameEnglish"]);
+                        menuData.QtyStockBal = DxData.getValueString(row["QtyStockBal"]);
+                        menuData.SmallUnit = DxData.getValueString(row["SmallUnit"]);
+                        menuData.OffDateTime = DxData.getValueDateTimeToString(row["OffDateTime"]);
+                        result.ListOfMasterData.Add(menuData); 
+                }
             }
 
             result.ResultStatus = true;
@@ -374,6 +391,149 @@ namespace APIRestService
         }
 
 
+        public EnquireMenu_Result UpdateMenu(MasterData_MenuInfo param)
+        {
+            EnquireMenu_Result result = new EnquireMenu_Result();
+            result.ResultStatus = false;
+             
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+
+            if (string.IsNullOrEmpty(param.MenuCode) && string.IsNullOrEmpty(param.MenuCategory))
+            {
+                result.ErrorMessage = "MenuCate ห้ามว่าง";
+                return result;
+            }
+
+            //BD
+            if (string.IsNullOrEmpty(param.MenuCode))
+            {
+                //<option> แนะนำ </ option >
+                //<option> ต้ม </ option >
+                //<option> ย่าง </ option >
+                //<option> ยำ </ option >
+                //<option> ทอด </ option >
+                //<option> ผัด </ option >
+                //<option> ทอด </ option >
+                //<option> จานเดียว </ option >
+                //<option> อาหารว่าง </ option >
+                //AR01|ดื่มโปร            
+                //BD12|เครื่องดื่ม
+                //CF01|คราฟ
+                //WK01|เหล้า
+                //CX01|คราฟ 
+
+
+                string strPrefixCode = "";
+                if (param.MenuCategory.Equals("เครื่องดื่มโปร"))
+                {
+                    strPrefixCode = "AR";
+                }
+                else if (param.MenuCategory.Equals("เครื่องดื่ม"))
+                {
+                    strPrefixCode = "BD";
+                }
+                else if (param.MenuCategory.Equals("คราฟ"))
+                {
+                    strPrefixCode = "CF";
+                }
+                else if (param.MenuCategory.Equals("เหล้า"))
+                {
+                    strPrefixCode = "WK";
+                }
+                else if (param.MenuCategory.Equals("คราฟ"))
+                {
+                    strPrefixCode = "CX";
+                }
+                else if (param.MenuCategory.Equals("แนะนำ"))
+                {
+                    strPrefixCode = "RC";
+                }
+                else if (param.MenuCategory.Equals("ต้ม"))
+                {
+                    strPrefixCode = "SP";
+                }
+                else if (param.MenuCategory.Equals("ย่าง"))
+                {
+                    strPrefixCode = "GL";
+                }
+                else if (param.MenuCategory.Equals("ยำ"))
+                {
+                    strPrefixCode = "YM";
+                }
+                else if (param.MenuCategory.Equals("ล้วกจิ้ม"))
+                {
+                    strPrefixCode = "ST";
+                }
+                else if (param.MenuCategory.Equals("ทอด"))
+                {
+                    strPrefixCode = "FR";
+                }
+                else if (param.MenuCategory.Equals("อาหารว่าง"))
+                {
+                    strPrefixCode = "OD";
+                }
+                else if (param.MenuCategory.Equals("ผัด"))
+                {
+                    strPrefixCode = "SF";
+                }
+                else if (param.MenuCategory.Equals("จานเดียว"))
+                {
+                    strPrefixCode = "FF";
+                }
+
+                string strCodeNew = getNewMasterID(strPrefixCode);
+                if (string.IsNullOrEmpty(strCodeNew))
+                {
+                    strCodeNew = getNewMasterID(strPrefixCode);
+                }
+                if (string.IsNullOrEmpty(strCodeNew))
+                {
+                    result.ErrorMessage = "ไม่สามารถสร้างรหัสเมนู";
+                    return result;
+                }
+
+                param.MenuCode = strCodeNew;
+            }
+             
+            Update_MasterDataDetail paramUpdate = new Update_MasterDataDetail();
+            paramUpdate.MasterType = "MENU";
+            paramUpdate.MasterID = param.MenuCode;
+            paramUpdate.MasterNameThai = param.MenuNameShowThai;
+            paramUpdate.MasterNameEnglish = param.MenuNameShowEng;
+            paramUpdate.OffCode = param.OffCode; 
+
+            string strMenuType = "1";
+            //<option> แนะนำ </ option >
+            //<option> ต้ม </ option >
+            //<option> ย่าง </ option >
+            //<option> ยำ </ option >
+            //<option> ทอด </ option >
+            //<option> ผัด </ option >
+            //<option> ทอด </ option >
+            //<option> จานเดียว </ option >
+            //<option> อาหารว่าง </ option >
+            //เครื่องดื่ม
+             
+            if (param.MenuCategory.Equals("เครื่องดื่ม") || param.MenuCategory.Equals("คราฟเบียร์") || param.MenuCategory.Equals("เหล้า"))
+            {
+                strMenuType = "2";
+            }
+                
+            MasterData_MenuInfo xMenuInfo = new MasterData_MenuInfo();
+            xMenuInfo.MenuType = strMenuType; //1อาหาร 2เครื่องดื่ม
+            xMenuInfo.MenuCategory = param.MenuCategory;
+            xMenuInfo.MenuImage = param.MenuImage;
+            xMenuInfo.Price = param.Price;
+            xMenuInfo.MenuDescrption = param.MenuDescrption; 
+
+            paramUpdate.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
+            UpdateMasterData(paramUpdate);
+
+            result.ResultStatus = true;
+            return result; 
+        }
+
+
 
         public double getPrice(string strMenuID)
         {
@@ -422,12 +582,12 @@ namespace APIRestService
         {
             //ListofUser.Add("ID|NAME|TYPE|PASS"); 
             List<string> ListofUser = new List<string>();
-            ListofUser.Add("hop|Hop Admin|99|hpd2d");
-            ListofUser.Add("admin|Hope Admin|99|!@#");
-            ListofUser.Add("staff1|Staff-1|1|s001");
-            ListofUser.Add("staff2|Staff-2|1|s002");
-            ListofUser.Add("chef1|Chef-1|2|c001");
-            ListofUser.Add("chef2|Chef-2|2|c002");
+            //ListofUser.Add("hop|Hop Admin|99|hpd2d");
+            //ListofUser.Add("admin|Hope Admin|99|!@#");
+            //ListofUser.Add("staff1|Staff-1|1|s1");
+            //ListofUser.Add("staff2|Staff-2|1|s2");
+            //ListofUser.Add("chef1|Chef-1|2|c2");
+            //ListofUser.Add("chef2|Chef-2|2|c2");
 
             foreach (var item in ListofUser)
             {
@@ -451,13 +611,18 @@ namespace APIRestService
         {
             List<string> ListofMenuRaw = new List<string>();
 
+            //ListofMenuRaw.Add("ตำไทย|YM04|1|ส้มตำ|50|Somtam thai");
+            //ListofMenuRaw.Add("ตำแตง|YM05|1|ส้มตำ|50|Somtam tang");
+            //ListofMenuRaw.Add("ข้าวสวย|FF14|1|ส้มตำ|50|Khao suai");
+
             //ListofMenuRaw.Add("Coke|BD06|2|เครื่องดื่ม|25|โค้ก");
-            ListofMenuRaw.Add("Soda |BD07|2|เครื่องดื่ม|20|โซดา");
-            ListofMenuRaw.Add("Water Drink (Big)|BD09|2|เครื่องดื่ม|40|น้ำเปล่า(ขวดใหญ่)");
-            ListofMenuRaw.Add("Water Drink (Small)|BD10|2|เครื่องดื่ม|30|น้ำเปล่า(ขวดเล็ก)");
-            ListofMenuRaw.Add("Ice (Big)|BD11|2|เครื่องดื่ม|50|น้ำแข็ง (ใหญ่)");
-            ListofMenuRaw.Add("Ice (Small)|BD12|2|เครื่องดื่ม|30|น้ำแข็ง (เล็ก)");
-            
+            //ListofMenuRaw.Add("Soda |BD07|2|เครื่องดื่ม|20|โซดา");
+            //ListofMenuRaw.Add("Water Drink (Big)|BD09|2|เครื่องดื่ม|40|น้ำเปล่า(ขวดใหญ่)");
+            //ListofMenuRaw.Add("Water Drink (Small)|BD10|2|เครื่องดื่ม|30|น้ำเปล่า(ขวดเล็ก)");
+            //ListofMenuRaw.Add("Ice (Big)|BD11|2|เครื่องดื่ม|50|น้ำแข็ง (ใหญ่)");
+            //ListofMenuRaw.Add("Ice (Small)|BD12|2|เครื่องดื่ม|30|น้ำแข็ง (เล็ก)");
+
+            //ListofMenuRaw.Add("เฟรนซ์ฟรายปลาหมึก|OD06|1|อาหารว่าง|119|French fries : Pla-muek");
 
             /*
             ListofMenuRaw.Add("< PRO > Beer สิงห์ (3ขวด)|AR01|2|เครื่องดื่ม|257|***โปร Beer สิงห์ 3 ขวด ***");
@@ -535,6 +700,7 @@ namespace APIRestService
             ListofMenuRaw.Add("เส้นนี้มีปู|OD03|1|อาหารว่าง|99");
             ListofMenuRaw.Add("คางกุ้งทอดกรอบ|OD04|1|อาหารว่าง|99");
             ListofMenuRaw.Add("ลูกชิ้นทอดรวม|OD05|1|อาหารว่าง|120");
+            ListofMenuRaw.Add("เฟรนซ์ฟรายปลาหมึก|OD06|1|อาหารว่าง|119");
 
             ListofMenuRaw.Add("คะน้าหมูกรอบ|SF01|1|ผัด|120");
             ListofMenuRaw.Add("หมูผัดน้ำมันหอย|SF02|1|ผัด|100");
@@ -571,6 +737,12 @@ namespace APIRestService
                 MasterData_MenuInfo xMenuInfo = new MasterData_MenuInfo();                
                 xMenuInfo.MenuType = strMenuinfo[2]; //1อาหาร 2เครื่องดื่ม
                 xMenuInfo.MenuCategory = strMenuinfo[3];
+
+                if (strMenuinfo.Length > 5)
+                {
+                    param.MasterNameEnglish = strMenuinfo[4];
+                }
+                
                 xMenuInfo.MenuImage = param.MasterID.ToLower() + ".jpg";
                 xMenuInfo.Price = strMenuinfo[4];
 
@@ -595,13 +767,38 @@ namespace APIRestService
             //xMenuInfo.Price = "";
             //param.MasterData = DxConvert.ConvertClassToStringJson(xMenuInfo);
             //UpdateMasterData(param);
-
-
-
+             
             return true;
 
         }
 
+        public string getNewMasterID(string strPrefixCode)
+        {
+            ConnectDB condb = new ConnectDB(ServiceUtil.getConnectionString());
+            DBCondition dbCondition = DBExpression.Normal("MasterType", DBComparisonOperator.EqualEver, "MENU")
+                & DBExpression.LIKE("MasterID", strPrefixCode + "%");
+
+            string strErrorMessage = string.Empty;
+            ConnectDB.GetDataOptionParam xGetDataOptionParam = new ConnectDB.GetDataOptionParam();
+            xGetDataOptionParam.TableName = "MASTERDATA";
+            xGetDataOptionParam.Condition = dbCondition.ToString();
+            DataTable xDataTable = condb.GetDataTable(xGetDataOptionParam, out strErrorMessage);
+            if (xDataTable.Rows.Count == 0)
+            {
+                return strPrefixCode + "01";
+            }
+
+            string strNewCode = string.Empty;
+            foreach (DataRow xRow in xDataTable.Select("","MasterID DESC"))
+            {
+                string strCode = DxData.getValueString(xRow["MasterID"]);
+                int inumber = DxConvert.ConvertStringToInt(strCode.Replace(strPrefixCode, ""));
+                inumber = inumber + 1;
+                strNewCode = strPrefixCode + inumber.ToString("D2");
+                break;
+            }
+            return strNewCode;
+        }
         
         public UpdateMoveTable_Result UpdateMoveTable(UpdateMoveTable_Param param)
         {
